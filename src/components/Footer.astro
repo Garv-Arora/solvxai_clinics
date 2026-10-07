@@ -1,0 +1,64 @@
+---
+import { SITE, fmtDate } from '../data/site';
+import { CASES } from '../data/cases';
+import { PLAYBOOKS } from '../data/playbooks';
+import Marquee from './Marquee.astro';
+---
+<footer class="footer section-dark">
+  <Marquee items={['Be the answer', 'Every engine', 'Every time', 'ChatGPT', 'Google AI Mode', 'Copilot', 'Perplexity', 'Gemini', 'Claude']} variant="outline" speed={55} label="Be the answer, every engine, every time" />
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-brand">
+        <a href="/" class="f-mark">SolvX<span>.AI</span></a>
+        <p class="small f-tag">{SITE.entity}</p>
+        <a href={SITE.meetUrl} target="_blank" rel="noopener" class="link-arrow f-cta">Book a 15-minute call</a>
+      </div>
+      <div>
+        <p class="tag f-h">Site</p>
+        <ul class="f-list">
+          <li><a href="/">Home</a></li>
+          <li><a href="/case-studies/">Case studies</a></li>
+          <li><a href="/playbooks/">Playbooks</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href={SITE.meetUrl} target="_blank" rel="noopener">Contact us</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="tag f-h">Case studies</p>
+        <ul class="f-list">
+          {CASES.map((c) => <li><a href={`/case-studies/${c.slug}/`}>{c.practice}</a></li>)}
+        </ul>
+      </div>
+      <div>
+        <p class="tag f-h">Playbooks</p>
+        <ul class="f-list">
+          {PLAYBOOKS.map((p) => <li><a href={`/playbooks/${p.slug}/`}>{p.title.replace(/^The /, '')}</a></li>)}
+        </ul>
+      </div>
+    </div>
+    <p class="f-giant" data-split aria-hidden="true">SOLVX<span>.AI</span></p>
+    <div class="f-base">
+      <p class="small">&copy; {SITE.year} SolvX.AI. Not affiliated with similarly named companies. Content reviewed {fmtDate(SITE.updated)}.</p>
+      <p class="small">No fabricated stats. Every number on this site names its source.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer { border-top: 1px solid var(--sx-border-dark); padding: 0 0 28px; }
+  .footer :global(.marquee) { margin-bottom: 64px; }
+  .f-giant { font-family: var(--sx-font-condensed); font-size: clamp(90px, 21vw, 340px); line-height: .8; letter-spacing: .01em; color: var(--sx-text); margin-top: 72px; white-space: nowrap; overflow: hidden; }
+  .f-giant span { color: var(--sx-accent); }
+  .f-grid { display: grid; gap: 36px; grid-template-columns: 1fr 1fr; }
+  .f-brand { grid-column: 1 / -1; }
+  @media (min-width: 900px) { .f-grid { grid-template-columns: 2fr 1fr 1fr 1fr; } .f-brand { grid-column: auto; } }
+  .f-mark { font-family: var(--sx-font-heading); font-weight: 700; font-size: 26px; letter-spacing: -.02em; color: var(--sx-text); }
+  .f-mark span { color: var(--sx-accent); }
+  .f-tag { max-width: 340px; margin-top: 10px; }
+  .f-cta { margin-top: 18px; }
+  .f-h { margin-bottom: 12px; }
+  .f-list { list-style: none; display: grid; gap: 8px; }
+  .f-list a { font-size: 14px; color: var(--sx-text-secondary); transition: color .2s; }
+  .f-list a:hover { color: var(--sx-accent); }
+  .f-base { margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--sx-border-dark); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+</style>

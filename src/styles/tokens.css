@@ -1,0 +1,209 @@
+/* ============================================================
+   SolvX.AI — Colors & Type Foundations
+   Extracted verbatim from the production codebase
+   (Garv-Arora/solvx-ai · frontend/src/index.css + tailwind.config.js)
+
+   The brand ships TWO equally-valid modes. Default = DARK.
+   Toggle dark mode by adding the `.dark` class to <html>.
+   "on-dark" tokens are a holdover name: in LIGHT mode the
+   "dark" sections are actually warm white; in DARK mode they
+   become warm near-black. Use the *semantic* tokens below.
+   ============================================================ */
+
+:root {
+  /* ---- Surfaces (LIGHT, default) ---- */
+  --sx-bg:              #FFFFFF;   /* page background */
+  --sx-surface:         #FFFFFF;   /* card surface */
+  --sx-surface-hover:   #F5F5F5;   /* card hover */
+  --sx-dark:            #FFFFFF;   /* "dark" sections (hero/proof/cta) */
+  --sx-dark-surface:    #F8F8F8;
+
+  /* ---- Text ---- */
+  --sx-text:                   #1C1917;            /* stone-900 — primary */
+  --sx-text-secondary:         #57534E;            /* stone-600 */
+  --sx-text-muted:             #A8A29E;            /* stone-400 */
+  --sx-text-on-dark:           #1C1917;            /* text over "dark" sections */
+  --sx-text-on-dark-secondary: rgba(28,25,23,0.55);
+  --sx-text-on-dark-muted:     rgba(28,25,23,0.35);
+
+  /* ---- Accent (copper / terracotta) — the ONE brand color ---- */
+  --sx-accent:        #C8814A;
+  --sx-accent-hover:  #B8723D;
+  --sx-accent-soft:   rgba(200,129,74,0.10);
+
+  /* ---- Borders (hairlines) ---- */
+  --sx-border:             rgba(28,25,23,0.08);
+  --sx-border-hover:       rgba(28,25,23,0.15);
+  --sx-border-dark:        rgba(28,25,23,0.07);
+  --sx-border-dark-hover:  rgba(28,25,23,0.12);
+
+  /* ---- Navbar (glass) ---- */
+  --sx-nav-bg:          rgba(255,255,255,0.92);
+  --sx-nav-border:      rgba(28,25,23,0.10);
+  --sx-nav-text:        rgba(28,25,23,0.50);
+  --sx-nav-text-hover:  #1C1917;
+  --sx-nav-active-bg:   #1C1917;
+  --sx-nav-active-text: #FFFFFF;
+  --sx-nav-logo:        #1C1917;
+
+  /* ---- Semantic / state ---- */
+  --sx-danger: #E5484D;  /* destructive (derived from shadcn destructive) */
+
+  /* ============================================================
+     TYPE FAMILIES
+     Load from Google Fonts (see README / index.html):
+     Bebas Neue · Bricolage Grotesque · DM Sans
+     ============================================================ */
+  --sx-font-condensed: 'Bebas Neue', sans-serif;          /* display / headlines / nav / numerals */
+  --sx-font-heading:   'Bricolage Grotesque', serif;      /* logo wordmark, editorial quotes */
+  --sx-font-body:      'DM Sans', sans-serif;             /* all running text, labels, UI */
+}
+
+.dark {
+  --sx-bg:              #1C1917;
+  --sx-surface:         #262320;
+  --sx-surface-hover:   #302C28;
+  --sx-dark:            #141210;
+  --sx-dark-surface:    #1C1917;
+
+  --sx-text:                   #F5F0EB;   /* warm cream */
+  --sx-text-secondary:         rgba(245,240,235,0.60);
+  --sx-text-muted:             rgba(245,240,235,0.35);
+  --sx-text-on-dark:           #F5F0EB;
+  --sx-text-on-dark-secondary: rgba(245,240,235,0.60);
+  --sx-text-on-dark-muted:     rgba(245,240,235,0.35);
+
+  --sx-accent:        #C8814A;
+  --sx-accent-hover:  #D8915A;   /* brightens (vs darkens) in dark mode */
+  --sx-accent-soft:   rgba(200,129,74,0.12);
+
+  --sx-border:             rgba(245,240,235,0.10);
+  --sx-border-hover:       rgba(245,240,235,0.20);
+  --sx-border-dark:        rgba(245,240,235,0.10);
+  --sx-border-dark-hover:  rgba(245,240,235,0.20);
+
+  --sx-nav-bg:          rgba(20,18,16,0.90);
+  --sx-nav-border:      rgba(245,240,235,0.15);
+  --sx-nav-text:        rgba(245,240,235,0.50);
+  --sx-nav-text-hover:  #F5F0EB;
+  --sx-nav-active-bg:   #F5F0EB;
+  --sx-nav-active-text: #1C1917;
+  --sx-nav-logo:        #F5F0EB;
+}
+
+/* ============================================================
+   SEMANTIC TYPE STYLES
+   Mirrors the production utility usage. Sizes are the
+   desktop (lg) end of the responsive ramp.
+   ============================================================ */
+
+/* Overline / eyebrow — sits above every section headline */
+.sx-overline {
+  font-family: var(--sx-font-condensed);
+  font-size: 15px;
+  letter-spacing: 0.15em;
+  color: var(--sx-accent);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Hero headline */
+.sx-h1 {
+  font-family: var(--sx-font-condensed);
+  font-size: clamp(56px, 9vw, 110px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;       /* "tracking-wide" */
+  text-transform: uppercase;
+  color: var(--sx-text);
+}
+
+/* Section headline */
+.sx-h2 {
+  font-family: var(--sx-font-condensed);
+  font-size: clamp(48px, 6vw, 72px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--sx-text);
+}
+
+/* Card / sub headline */
+.sx-h3 {
+  font-family: var(--sx-font-condensed);
+  font-size: 22px;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--sx-text);
+}
+
+/* Big numerals (stats, step numbers) */
+.sx-numeral {
+  font-family: var(--sx-font-condensed);
+  font-size: 44px;
+  line-height: 1;
+  color: var(--sx-accent);
+}
+
+/* Body */
+.sx-body {
+  font-family: var(--sx-font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--sx-text-secondary);
+}
+
+/* Small / meta / labels */
+.sx-small {
+  font-family: var(--sx-font-body);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--sx-text-muted);
+}
+
+/* Editorial italic quote (Bricolage Grotesque) */
+.sx-quote {
+  font-family: var(--sx-font-heading);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 17px;
+  color: var(--sx-text-muted);
+}
+
+/* ============================================================
+   SIGNATURE TREATMENTS
+   ============================================================ */
+
+/* Control-Room grid pattern — the recurring section background */
+.sx-grid-pattern {
+  background-image:
+    linear-gradient(var(--sx-border-dark) 1px, transparent 1px),
+    linear-gradient(90deg, var(--sx-border-dark) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Primary CTA button — copper, white text, sharp corners */
+.sx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--sx-font-condensed);
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background: var(--sx-accent);
+  padding: 16px 40px;
+  border: none;
+  border-radius: 0;            /* sharp */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.sx-btn:hover { background: var(--sx-accent-hover); }
+
+/* Selection */
+::selection { background-color: rgba(200,129,74,0.25); }
+
+/* ---- Site extension (added for the multi-offer site) ---- */
+:root { --sx-on-accent: #FFFFFF; }
+.dark { --sx-on-accent: #FFFFFF; }

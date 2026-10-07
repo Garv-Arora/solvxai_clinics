@@ -1,0 +1,104 @@
+---
+// Illustrative Answer Share simulator: one prompt, seven engines, ten runs each.
+// Shows why single screenshots mislead (they flip run to run) while the probability,
+// with a confidence interval, stays readable. Probabilities are fictional.
+import { ENGINES } from '../data/geo';
+const today = [0.2, 0.1, 0.15, 0.3, 0.4, 0.2, 0.1];
+const after = [0.7, 0.6, 0.65, 0.8, 0.9, 0.7, 0.55];
+---
+<div class="sim" data-sim data-today={JSON.stringify(today)} data-after={JSON.stringify(after)}>
+  <div class="sim-head">
+    <p class="tag">Answer Share · one buyer prompt × 7 engines × 10 runs</p>
+    <span class="sim-note">Illustrative simulation</span>
+  </div>
+  <p class="sim-q">“best GEO agency for a B2B software company”</p>
+  <div class="sim-rows" role="img" aria-label="Grid of simulated runs per engine">
+    {ENGINES.map((e, i) => (
+      <div class="sim-row" data-row={i}>
+        <span class="sim-e">{e}</span>
+        <span class="sim-dots">{Array.from({ length: 10 }).map(() => <i></i>)}</span>
+        <span class="sim-k" data-k>0/10</span>
+      </div>
+    ))}
+  </div>
+  <div class="sim-out">
+    <div>
+      <p class="tag">Answer Share</p>
+      <p class="sim-big" data-share>–</p>
+      <p class="small" data-ci>95% confidence interval</p>
+    </div>
+    <div>
+      <p class="tag">One screenshot would say</p>
+      <p class="sim-shot" data-shot>–</p>
+      <p class="small">ChatGPT, run 1 only</p>
+    </div>
+  </div>
+  <div class="sim-ctl">
+    <div class="seg" role="group" aria-label="Scenario">
+      <button type="button" class="on" data-scn="today" aria-pressed="true">Today</button>
+      <button type="button" data-scn="after" aria-pressed="false">After 90 days</button>
+    </div>
+    <button type="button" class="chip" data-rerun>Re-run the prompt</button>
+  </div>
+</div>
+
+<style>
+  .sim { border: 1px solid var(--sx-border-dark-hover); background: var(--sx-dark); padding: 18px; }
+  .sim-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+  .sim-note { font-size: 11px; color: var(--sx-text-muted); border: 1px solid var(--sx-border); padding: 2px 6px; }
+  .sim-q { font-family: var(--sx-font-heading); font-weight: 500; font-size: 17px; color: var(--sx-text); margin-top: 12px; }
+  .sim-rows { margin-top: 14px; display: grid; gap: 6px; }
+  .sim-row { display: grid; grid-template-columns: 120px 1fr 44px; gap: 10px; align-items: center; }
+  @media (max-width: 480px) { .sim-row { grid-template-columns: 92px 1fr 40px; } }
+  .sim-e { font-size: 12px; color: var(--sx-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sim-dots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+  .sim-dots :global(i) { display: block; aspect-ratio: 1; border: 1px solid var(--sx-border-hover); transition: background-color .25s, border-color .25s; }
+  .sim-dots :global(i.hit) { background: var(--sx-accent); border-color: var(--sx-accent); }
+  .sim-k { font-family: var(--sx-font-condensed); font-size: 17px; color: var(--sx-text-secondary); text-align: right; }
+  .sim-out { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--sx-border); border: 1px solid var(--sx-border); margin-top: 16px; }
+  .sim-out > div { background: var(--sx-dark); padding: 14px; }
+  .sim-big { font-family: var(--sx-font-condensed); font-size: 46px; line-height: 1; color: var(--sx-accent); margin-top: 6px; }
+  .sim-shot { font-family: var(--sx-font-condensed); font-size: 30px; letter-spacing: .04em; text-transform: uppercase; margin-top: 10px; color: var(--sx-text); }
+  .sim-ctl { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid var(--sx-border-hover); }
+  .seg button { padding: 8px 14px; font-family: var(--sx-font-condensed); letter-spacing: .1em; text-transform: uppercase; font-size: 14px; color: var(--sx-text-secondary); }
+  .seg button.on { background: var(--sx-accent); color: var(--sx-on-accent); }
+  .chip { cursor: pointer; }
+  .chip:hover { border-color: var(--sx-accent); color: var(--sx-text); }
+</style>
+
+<script>
+  const wilson = (k: number, n: number) => {
+    const z = 1.96, p = k / n, d = 1 + (z * z) / n;
+    const c = (p + (z * z) / (2 * n)) / d;
+    const h = (z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n))) / d;
+    return [Math.max(0, c - h), Math.min(1, c + h)];
+  };
+  document.querySelectorAll<HTMLElement>('[data-sim]').forEach((root) => {
+    const probs: Record<string, number[]> = { today: JSON.parse(root.dataset.today!), after: JSON.parse(root.dataset.after!) };
+    let scn = 'today';
+    const run = () => {
+      let total = 0; let firstChatGPT = false;
+      root.querySelectorAll<HTMLElement>('[data-row]').forEach((row, i) => {
+        const p = probs[scn][i]; let k = 0;
+        row.querySelectorAll('i').forEach((dot, j) => {
+          const hit = Math.random() < p; dot.classList.toggle('hit', hit); if (hit) k++;
+          if (i === 0 && j === 0) firstChatGPT = hit;
+        });
+        (row.querySelector('[data-k]') as HTMLElement).textContent = `${k}/10`;
+        total += k;
+      });
+      const n = 70; const [lo, hi] = wilson(total, n);
+      (root.querySelector('[data-share]') as HTMLElement).textContent = `${Math.round((total / n) * 100)}%`;
+      (root.querySelector('[data-ci]') as HTMLElement).textContent = `95% confidence interval: ${Math.round(lo * 100)}–${Math.round(hi * 100)}%`;
+      (root.querySelector('[data-shot]') as HTMLElement).textContent = firstChatGPT ? 'You’re named' : 'You’re invisible';
+    };
+    root.querySelectorAll<HTMLButtonElement>('[data-scn]').forEach((b) => b.addEventListener('click', () => {
+      scn = b.dataset.scn!;
+      root.querySelectorAll('[data-scn]').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
+      run();
+    }));
+    root.querySelector('[data-rerun]')?.addEventListener('click', run);
+    run();
+  });
+</script>

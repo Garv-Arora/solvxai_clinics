@@ -1,0 +1,162 @@
+---
+// The three promises as visual cards: a looping vector animation, a title and one line each.
+// `proof` adds one sourced number per card (used on the flagship page).
+import { PILLARS } from '../data/geo';
+interface Props { index?: string; proof?: boolean; title?: string }
+const { index = '02', proof = false, title = 'Three promises.' } = Astro.props;
+// seeded scatter so server and client agree
+let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const dots = Array.from({ length: 42 }, () => ({ sx: 16 + rnd() * 328, sy: 14 + rnd() * 150, tx: 252 + (rnd() - 0.5) * 60, ty: 88 + (rnd() - 0.5) * 44 }));
+const weeks = Array.from({ length: 11 }, (_, i) => 164 + i * 15.6);
+const pick = [2, 0, 0]; // which evidence item is the card's proof
+---
+<section class="section pr" id="deliver" data-promises>
+  <div class="wrap">
+    <div class="shead">
+      <div class="shead-top"><span class="shead-i">{index}</span><span class="shead-rule" aria-hidden="true"></span><p class="eyebrow plain">What we deliver</p></div>
+      <h2 class="h2">{title}</h2>
+    </div>
+    <div class="pr-grid">
+      {PILLARS.map((p, i) => (
+        <article class="promise" id={`pillar-${p.id}`} data-tilt="4">
+          <div class="pr-viz" aria-hidden="true">
+            {i === 0 && (
+              <svg viewBox="0 0 360 200" data-viz="flow">
+                <rect x="20" y="28" width="118" height="92" class="v-box" />
+                <text x="30" y="46" class="v-t">AI ANSWER</text>
+                <path d="M30 62h84M30 92h70M30 106h54" class="v-m" />
+                <rect x="28" y="70" width="98" height="14" class="v-hit" data-hit />
+                <text x="34" y="81" class="v-t v-on">YOUR BRAND</text>
+                <path d="M138 74H332" class="v-m" /><path d="M138 74H332" class="v-a" data-flow pathLength="1" />
+                {['VISIT', 'CALL', 'DEAL'].map((l, k) => (<g data-stage><rect x={186 + k * 62} y="60" width="28" height="28" class="v-stage" /><text x={200 + k * 62} y="108" class="v-t" text-anchor="middle">{l}</text></g>))}
+                <rect x="133" y="69" width="10" height="10" class="v-f" data-packet />
+                <text x="20" y="160" class="v-t">AI REFERRAL</text><rect x="110" y="150" width="222" height="11" class="v-f" data-bar />
+                <text x="20" y="182" class="v-t">SEARCH</text><rect x="110" y="172" width="20" height="11" class="v-dim" data-bar />
+              </svg>
+            )}
+            {i === 1 && (
+              <svg viewBox="0 0 360 200" data-viz="scatter">
+                <rect x="212" y="58" width="80" height="60" class="v-band" data-band />
+                {dots.map((d) => <rect x={d.tx - 2.5} y={d.ty - 2.5} width="5" height="5" class="v-dot" data-dot data-sx={d.sx - d.tx} data-sy={d.sy - d.ty} />)}
+                <path d="M252 30v20M252 126v20M184 88h20M300 88h20" class="v-a" data-cross />
+                <text x="20" y="186" class="v-t" data-lab-a>ONE SCREENSHOT · ±31 POINTS</text>
+                <text x="340" y="186" class="v-t v-on" text-anchor="end" data-lab-b>REPEATED RUNS · ±6</text>
+              </svg>
+            )}
+            {i === 2 && (
+              <svg viewBox="0 0 360 200" data-viz="speed">
+                <path d="M24 96H336" class="v-m" /><path d="M24 96H336" class="v-a thick" data-prog pathLength="1" />
+                {weeks.map((x) => <rect x={x - 1.5} y="82" width="3" height="28" class="v-tick" data-tick />)}
+                {[[24, 'START'], [82, '72H BASELINE'], [150, 'DAY 14 FIXES'], [336, 'DAY 90']].map(([x, l], k) => (
+                  <g data-mile><rect x={(x as number) - 7} y="89" width="14" height="14" class="v-mile" /><text x={x as number} y={k % 2 ? 64 : 136} class="v-t" text-anchor={k === 0 ? 'start' : k === 3 ? 'end' : 'middle'}>{l}</text><path d={`M${x} ${k % 2 ? 70 : 118}v${k % 2 ? 14 : -10}`} class="v-m" /></g>
+                ))}
+                <text x="250" y="136" class="v-t v-on" text-anchor="middle">WEEKLY RELEASES</text>
+              </svg>
+            )}
+          </div>
+          <div class="pr-body">
+            <span class="pr-n" aria-hidden="true">{p.n}</span>
+            <h3 class="pr-t">{p.short}</h3>
+            <p class="pr-d">{p.line}</p>
+            {proof && (
+              <p class="pr-proof"><b class="numeral">{p.evidence[pick[i]].value}</b><span>{p.evidence[pick[i]].label} <a href={p.evidence[pick[i]].src.url} target={p.evidence[pick[i]].src.url.startsWith('/') ? undefined : '_blank'} rel="noopener">{p.evidence[pick[i]].src.label.split(':')[0]}</a></span></p>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .pr-grid { display: grid; gap: 1px; background: var(--sx-border); border: 1px solid var(--sx-border); margin-top: 44px; }
+  @media (min-width: 960px) { .pr-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .promise { background: var(--sx-bg); display: flex; flex-direction: column; }
+  :global(.section-dark) .promise { background: var(--sx-dark); }
+  .pr-viz { border-bottom: 1px solid var(--sx-border); background-image: linear-gradient(var(--sx-border-dark) 1px, transparent 1px), linear-gradient(90deg, var(--sx-border-dark) 1px, transparent 1px); background-size: 30px 30px; padding: 14px; }
+  .pr-viz svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .pr-body { padding: 26px 28px 32px; display: flex; flex-direction: column; flex: 1; }
+  .pr-n { font-family: var(--sx-font-condensed); font-size: 15px; letter-spacing: .14em; color: var(--sx-accent); }
+  .pr-t { font-family: var(--sx-font-condensed); font-size: clamp(32px, 3vw, 44px); line-height: .94; text-transform: uppercase; margin-top: 10px; }
+  .pr-d { color: var(--sx-text-secondary); margin-top: 12px; font-size: 16px; max-width: 36ch; }
+  .pr-proof { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; margin-top: auto; padding-top: 22px; }
+  .pr-proof .numeral { font-size: 44px; font-weight: 400; }
+  .pr-proof span { font-size: 12px; line-height: 1.45; color: var(--sx-text-muted); }
+  .pr-proof a { border-bottom: 1px solid var(--sx-border-hover); white-space: nowrap; }
+  .pr-proof a:hover { color: var(--sx-accent); }
+
+  .pr-viz :global(.v-t) { font-family: var(--sx-font-condensed); font-size: 11px; letter-spacing: .12em; fill: var(--sx-text-muted); }
+  .pr-viz :global(.v-on) { fill: var(--sx-accent); }
+  .pr-viz :global(.v-m) { stroke: var(--sx-border-hover); stroke-width: 1; fill: none; }
+  .pr-viz :global(.v-a) { stroke: var(--sx-accent); stroke-width: 1.5; fill: none; }
+  .pr-viz :global(.thick) { stroke-width: 3; }
+  .pr-viz :global(.v-box) { fill: var(--sx-bg); stroke: var(--sx-border-hover); }
+  .pr-viz :global(.v-hit) { fill: var(--sx-accent-soft); stroke: var(--sx-accent); }
+  .pr-viz :global(.v-stage), .pr-viz :global(.v-mile) { fill: var(--sx-bg); stroke: var(--sx-border-hover); transition: fill .3s, stroke .3s; }
+  .pr-viz :global(.lit .v-stage), .pr-viz :global(.lit .v-mile) { fill: var(--sx-accent); stroke: var(--sx-accent); }
+  .pr-viz :global(.v-f) { fill: var(--sx-accent); }
+  .pr-viz :global(.v-dim) { fill: var(--sx-text-muted); }
+  .pr-viz :global(.v-dot) { fill: var(--sx-accent); transition: fill .6s; }
+  .pr-viz :global(.v-dot.cold) { fill: var(--sx-text-muted); }
+  .pr-viz :global(.v-band) { fill: var(--sx-accent-soft); stroke: var(--sx-accent); stroke-dasharray: 4 4; }
+  .pr-viz :global(.v-tick) { fill: var(--sx-border-hover); transition: fill .25s; }
+  .pr-viz :global(.v-tick.lit) { fill: var(--sx-accent); }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+  const BOT = /bot|crawl|spider|slurp|chatgpt|perplexity|claude|gptbot/i.test(navigator.userAgent);
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches || BOT;
+  // Without motion the SVGs show their final state: pipeline lit, dots clustered, timeline full.
+  document.querySelectorAll<HTMLElement>('[data-promises]').forEach((root) => {
+    const q = <T extends Element>(el: Element | null, s: string) => (el ? Array.from(el.querySelectorAll<T>(s)) : []);
+    const flow = root.querySelector('[data-viz="flow"]'), sc = root.querySelector('[data-viz="scatter"]'), sp = root.querySelector('[data-viz="speed"]');
+    if (reduced) { q(flow, '[data-stage]').concat(q(sp, '[data-mile]'), q(sp, '[data-tick]')).forEach((e) => e.classList.add('lit')); return; }
+    const play = (el: Element | null, tl: gsap.core.Timeline) => { if (el) ScrollTrigger.create({ trigger: el, start: 'top 88%', end: 'bottom top', onToggle: (s) => (s.isActive ? tl.play() : tl.pause()) }); };
+
+    // 1. named in the answer, then visit, call, deal
+    if (flow) {
+      const stages = q<SVGGElement>(flow, '[data-stage]'); const packet = flow.querySelector('[data-packet]');
+      const tl = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 1.4, defaults: { ease: 'power2.inOut' } });
+      tl.call(() => stages.forEach((s) => s.classList.remove('lit')), [], 0)
+        .set(packet, { x: 0, opacity: 0 }, 0)
+        .fromTo(flow.querySelector('[data-hit]'), { opacity: 0.2 }, { opacity: 1, duration: 0.35 }, 0)
+        .fromTo(flow.querySelector('[data-flow]'), { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.5 }, 0.1)
+        .to(packet, { opacity: 1, duration: 0.1 }, 0.1)
+        .to(packet, { x: 186, duration: 1.5 }, 0.1)
+        .fromTo(q(flow, '[data-bar]'), { scaleX: 0, transformOrigin: '0 50%' }, { scaleX: 1, duration: 0.9, stagger: 0.12, ease: 'expo.out' }, 0.4)
+        .to(packet, { opacity: 0, duration: 0.3 }, 1.7);
+      [0.72, 1.0, 1.58].forEach((at, k) => tl.call(() => stages[k]?.classList.add('lit'), [], at));
+      play(flow, tl);
+    }
+    // 2. scattered single checks tighten into a measured range
+    if (sc) {
+      const dots = q<SVGRectElement>(sc, '[data-dot]');
+      const cold = (on: boolean) => dots.forEach((d) => d.classList.toggle('cold', on));
+      const tl = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 0.6 });
+      tl.call(() => cold(true), [], 0)
+        .set(dots, { x: (i: number) => Number(dots[i].dataset.sx), y: (i: number) => Number(dots[i].dataset.sy) }, 0)
+        .set(q(sc, '[data-band], [data-cross], [data-lab-b]'), { opacity: 0 }, 0).set(q(sc, '[data-lab-a]'), { opacity: 1 }, 0)
+        .to(dots, { x: '+=random(-10,10)', y: '+=random(-8,8)', duration: 1.1, ease: 'sine.inOut' })
+        .call(() => cold(false))
+        .to(dots, { x: 0, y: 0, duration: 1.2, ease: 'expo.inOut', stagger: { each: 0.012, from: 'random' } })
+        .to(q(sc, '[data-band], [data-cross]'), { opacity: 1, duration: 0.35 }, '-=0.5')
+        .to(q(sc, '[data-lab-a]'), { opacity: 0.3, duration: 0.3 }, '<').to(q(sc, '[data-lab-b]'), { opacity: 1, duration: 0.3 }, '<')
+        .to({}, { duration: 2.2 });
+      play(sc, tl);
+    }
+    // 3. baseline in 72 hours, fixes by day 14, then a release every week
+    if (sp) {
+      const miles = q<SVGGElement>(sp, '[data-mile]'), ticks = q<SVGRectElement>(sp, '[data-tick]');
+      const at = [0, 0.186, 0.404, 1];
+      const tl = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 1.6 });
+      tl.call(() => [...miles, ...ticks].forEach((e) => e.classList.remove('lit')), [], 0)
+        .fromTo(sp.querySelector('[data-prog]'), { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 2.6, ease: 'none' }, 0);
+      miles.forEach((m, k) => tl.call(() => m.classList.add('lit'), [], 0.03 + at[k] * 2.55));
+      ticks.forEach((tk, k) => tl.call(() => tk.classList.add('lit'), [], (0.449 + (k / 10) * 0.5) * 2.6));
+      play(sp, tl);
+    }
+  });
+</script>

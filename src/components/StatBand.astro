@@ -1,0 +1,37 @@
+---
+// Big count-up numbers with their sources. Numbers animate from zero on scroll (motion.ts);
+// the final value is what's in the HTML.
+interface Stat { value: string; label: string; source?: string; url?: string }
+interface Props { stats: Stat[]; dark?: boolean }
+const { stats, dark = false } = Astro.props;
+---
+<section class:list={['sband', { 'section-dark': dark }]}>
+  <div class="wrap sb-grid" style={`--n:${stats.length}`}>
+    {stats.map((s) => (
+      <div class="sb">
+        <p class="numeral sb-v">{s.value}</p>
+        <p class="sb-l">{s.label}</p>
+        {s.source && <p class="sb-s">Source: {s.url ? <a href={s.url} target={s.url.startsWith('/') ? undefined : '_blank'} rel={s.url.startsWith('/') ? undefined : 'noopener'}>{s.source}</a> : s.source}</p>}
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .sband { border-bottom: 1px solid var(--sx-border); }
+  .sband.section-dark { border-color: var(--sx-border-dark); }
+  .sb-grid { display: grid; }
+  @media (min-width: 900px) { .sb-grid { grid-template-columns: repeat(var(--n), minmax(0, 1fr)); } }
+  .sb { padding: 52px 0 44px; border-bottom: 1px solid var(--sx-border); }
+  .sb:last-child { border-bottom: 0; }
+  @media (min-width: 900px) {
+    .sb { padding: 72px 32px 60px; border-bottom: 0; border-right: 1px solid var(--sx-border); }
+    .sb:first-child { padding-left: 0; }
+    .sb:last-child { border-right: 0; }
+  }
+  .sb-v { font-size: clamp(80px, 9vw, 144px); line-height: .85; }
+  .sb-l { margin-top: 18px; color: var(--sx-text); font-size: 16px; max-width: 340px; }
+  .sb-s { margin-top: 12px; font-size: 11px; color: var(--sx-text-muted); }
+  .sb-s a { border-bottom: 1px solid var(--sx-border-hover); }
+  .sb-s a:hover { color: var(--sx-accent); border-color: var(--sx-accent); }
+</style>

@@ -1,0 +1,18 @@
+---
+// Editorial row list: index · title · description · arrow. Replaces boxy card grids.
+import Icon from './Icon.astro';
+export interface Row { href: string; title: string; desc?: string; meta?: string; index?: string; external?: boolean }
+interface Props { rows: Row[]; numbered?: boolean; headingLevel?: 'h2' | 'h3' }
+const { rows, numbered = true, headingLevel = 'h3' } = Astro.props;
+const H = headingLevel;
+---
+<div class="rows">
+  {rows.map((r, i) => (
+    <a href={r.href} class="row-item" target={r.external ? '_blank' : undefined} rel={r.external ? 'noopener' : undefined}>
+      <span class="row-i">{numbered ? (r.index ?? String(i + 1).padStart(2, '0')) : ''}</span>
+      <H class="row-t">{r.title}</H>
+      <span class="row-d">{r.desc}{r.meta && <span class="row-m">{r.meta}</span>}</span>
+      <span class="row-a"><Icon name="arrow-right" size={22} /></span>
+    </a>
+  ))}
+</div>

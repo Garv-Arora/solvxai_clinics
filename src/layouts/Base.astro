@@ -1,0 +1,97 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../data/site';
+import { organization, website, webPage, breadcrumbs, type Crumb } from '../data/schema';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  bare?: boolean;          // print pages: no nav/footer
+  jsonld?: Record<string, unknown> | Record<string, unknown>[];
+  forceTheme?: 'light' | 'dark';
+  crumbs?: Crumb[];        // BreadcrumbList (visible crumbs are rendered by the page)
+  pageType?: string;       // schema.org WebPage subtype: AboutPage, ContactPage, CollectionPage...
+  published?: string;      // ISO date
+  updated?: string;        // ISO date — shown on the page and in dateModified
+  ogType?: 'website' | 'article';
+  about?: string;          // @id the page is about (e.g. a Service)
+}
+const {
+  title, description = SITE.description, image = '/brand/monogram-copper.png', noindex = false, bare = false,
+  jsonld, forceTheme, crumbs, pageType, published, updated, ogType = 'website', about,
+} = Astro.props;
+const site = Astro.site!;
+const canonical = new URL(Astro.url.pathname, site).toString();
+const fullTitle = title.includes('SolvX.AI') ? title : `${title} | SolvX.AI`;
+const extra = (jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : []).map(({ '@context': _c, ...n }) => n);
+const graph = noindex ? [] : [
+  organization(site),
+  website(site),
+  webPage(site, { url: canonical, title: fullTitle, description, type: pageType, updated, published, hasCrumbs: !!crumbs?.length, about }),
+  ...(crumbs?.length ? [breadcrumbs(site, crumbs, canonical)] : []),
+  ...extra,
+];
+const ld = { '@context': 'https://schema.org', '@graph': graph };
+---
+<!doctype html>
+<html lang="en" class={forceTheme === 'light' ? 'no-js' : 'dark no-js'} data-force={forceTheme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />}
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, site).toString()} />
+    {ogType === 'article' && published && <meta property="article:published_time" content={published} />}
+    {ogType === 'article' && updated && <meta property="article:modified_time" content={updated} />}
+    <meta name="twitter:card" content={image.startsWith('/og/') ? 'summary_large_image' : 'summary'} />
+    <meta name="theme-color" content="#141210" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        d.classList.remove('no-js');
+        var f = d.getAttribute('data-force');
+        if (f) { d.classList.toggle('dark', f === 'dark'); return; }
+        var t = null;
+        try { t = localStorage.getItem('solvx-theme'); } catch (e) {}
+        if (t === 'light') d.classList.remove('dark'); else d.classList.add('dark');
+      })();
+      // Motion start states apply only when JS runs, motion is welcome and the visitor is not a bot.
+      (function () {
+        var d = document.documentElement;
+        var bot = /bot|crawl|spider|slurp|googleother|chatgpt|perplexity|claude|gptbot/i.test(navigator.userAgent);
+        var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (bot || calm || d.getAttribute('data-force')) return;
+        d.classList.add('motion');
+        setTimeout(function () { if (!window.__motionReady) d.classList.remove('motion'); }, 3500);
+      })();
+    </script>
+    {graph.length > 0 && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
+    <slot name="head" />
+  </head>
+  <body>
+    {!bare && <a href="#main" class="sr-only">Skip to content</a>}
+    {!bare && <div class="progress" data-progress aria-hidden="true"></div>}
+    {!bare && <div class="cursor" data-cursor aria-hidden="true"></div>}
+    {!bare && <div class="grain" aria-hidden="true"></div>}
+    {!bare && <Nav />}
+    <main id="main"><slot /></main>
+    {!bare && <Footer />}
+    {!bare && <script>import '../scripts/motion';</script>}
+  </body>
+</html>

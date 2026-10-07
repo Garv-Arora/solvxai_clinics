@@ -1,0 +1,91 @@
+---
+// Web edition of a playbook: numbered sections, a contents rail, the PDF one click away.
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Glyph from '../../components/Glyph.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import RowList from '../../components/RowList.astro';
+import Blocks from '../../components/Blocks.astro';
+import CTABand from '../../components/CTABand.astro';
+import { PLAYBOOKS, pdfPath, type Playbook } from '../../data/playbooks';
+import { article } from '../../data/schema';
+import { fmtDate } from '../../data/site';
+
+export function getStaticPaths() { return PLAYBOOKS.map((p) => ({ params: { slug: p.slug }, props: { p } })); }
+const { p } = Astro.props as { p: Playbook };
+const crumbs = [{ name: 'Home', url: '/' }, { name: 'Playbooks', url: '/playbooks/' }, { name: p.title, url: `/playbooks/${p.slug}/` }];
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const id = (i: number) => `s${i + 1}`;
+const sources = p.sources.filter((s, i, a) => a.findIndex((x) => x.label === s.label) === i);
+const others = PLAYBOOKS.filter((x) => x.slug !== p.slug);
+const jsonld = article(Astro.site!, { url: canonical, headline: p.title, description: `${p.subtitle} ${p.intro}`, published: p.updated, section: 'Playbooks', citations: sources.filter((s) => s.url.startsWith('http')) });
+---
+<Base title={p.title} description={`${p.intro} A free SolvX.AI playbook, every number sourced.`} crumbs={crumbs} jsonld={jsonld} published={p.updated} updated={p.updated} ogType="article">
+  <PageHero size="compact" crumbs={crumbs} eyebrow={`Playbook ${p.code} · ${p.topic}`} h1={p.title} lead={p.intro} primary={{ href: pdfPath(p.slug), label: 'Download the PDF' }} secondary={{ href: '/playbooks/', label: 'All playbooks', icon: 'book-open' }}>
+    <p class="small meta">For: {p.audience} · Updated <time datetime={p.updated}>{fmtDate(p.updated)}</time></p>
+    <Fragment slot="viz"><div class="viz"><Glyph name={p.glyph} size={300} /></div></Fragment>
+  </PageHero>
+
+  <div class="wrap pb-body">
+    <aside class="pb-toc" aria-label="Contents">
+      <p class="tag">Contents</p>
+      <ol>
+        {p.sections.map((s, i) => <li><a href={`#${id(i)}`}><span>{String(i + 1).padStart(2, '0')}</span>{s.h}</a></li>)}
+        <li><a href="#sources"><span>→</span>Sources</a></li>
+      </ol>
+      <a href={pdfPath(p.slug)} class="btn-ghost dl" download><Icon name="download" size={15} /> PDF</a>
+    </aside>
+
+    <article class="pbw">
+      {p.sections.map((s, i) => (
+        <section class="pbw-s" id={id(i)}>
+          <p class="pbw-i">{String(i + 1).padStart(2, '0')}</p>
+          <h2 class="pbw-h">{s.h}</h2>
+          {s.lead && <p class="lead pbw-lead">{s.lead}</p>}
+          <Blocks blocks={s.blocks} />
+        </section>
+      ))}
+      <section class="pbw-s" id="sources">
+        <p class="pbw-i">→</p>
+        <h2 class="pbw-h">Sources</h2>
+        <ol class="srcs">
+          {sources.map((s) => <li>{s.url ? <a href={s.url} target={s.url.startsWith('/') ? undefined : '_blank'} rel="noopener">{s.label}</a> : s.label}</li>)}
+        </ol>
+      </section>
+    </article>
+  </div>
+
+  <section class="section section-dark section-bordered">
+    <div class="wrap">
+      <SectionHead eyebrow="Keep going" title="The other playbooks" />
+      <div style="margin-top:36px"><RowList rows={others.map((x) => ({ href: `/playbooks/${x.slug}/`, title: x.title, desc: x.subtitle, index: x.code }))} /></div>
+    </div>
+  </section>
+
+  <CTABand title="Want this done for you?" text="Fifteen minutes to agree the questions your patients or buyers ask. Then we show you who the AI names for them." />
+</Base>
+
+<style>
+  .meta { margin-top: 18px; max-width: 640px; }
+  .viz { display: grid; place-items: center; opacity: .9; }
+  .pb-body { display: grid; gap: 40px; padding-top: 56px; padding-bottom: 90px; }
+  @media (min-width: 1024px) { .pb-body { grid-template-columns: 260px minmax(0, 820px); justify-content: space-between; gap: 64px; } }
+  .pb-toc { align-self: start; border: 1px solid var(--sx-border); padding: 20px; display: grid; gap: 12px; }
+  @media (min-width: 1024px) { .pb-toc { position: sticky; top: 100px; } }
+  .pb-toc ol { list-style: none; display: grid; }
+  .pb-toc li a { display: grid; grid-template-columns: 28px 1fr; gap: 6px; padding: 9px 0; border-bottom: 1px solid var(--sx-border); font-size: 14px; line-height: 1.35; color: var(--sx-text-secondary); transition: color .2s; }
+  .pb-toc li:last-child a { border-bottom: 0; }
+  .pb-toc li a:hover { color: var(--sx-accent); }
+  .pb-toc li span { font-family: var(--sx-font-condensed); color: var(--sx-accent); letter-spacing: .06em; }
+  .dl { justify-content: center; font-size: 15px; padding: 10px 14px; }
+  .pbw { font-size: 17px; }
+  .pbw-s { padding: 0 0 64px; scroll-margin-top: 100px; }
+  .pbw-s + .pbw-s { padding-top: 56px; border-top: 1px solid var(--sx-border); }
+  .pbw-i { font-family: var(--sx-font-condensed); font-size: 72px; line-height: .8; color: transparent; -webkit-text-stroke: 1px var(--sx-accent); }
+  .pbw-h { font-family: var(--sx-font-condensed); font-size: clamp(36px, 4.4vw, 60px); line-height: .95; text-transform: uppercase; letter-spacing: .01em; margin-top: 14px; max-width: 18ch; }
+  .pbw-lead { margin-top: 16px; max-width: 620px; }
+  .srcs { margin-top: 22px; padding-left: 1.4em; display: grid; gap: 8px; font-size: 14px; color: var(--sx-text-muted); }
+  .srcs a { color: var(--sx-text-secondary); border-bottom: 1px solid var(--sx-border-hover); overflow-wrap: anywhere; }
+  .srcs a:hover { color: var(--sx-accent); border-color: var(--sx-accent); }
+</style>

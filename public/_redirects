@@ -1,0 +1,6 @@
+# Cloudflare Pages: permanent redirects.
+/contact      https://cal.com/solvx-ai/15min   302
+/contact/     https://cal.com/solvx-ai/15min   302
+/book         https://cal.com/solvx-ai/15min   302
+/playbook     /playbooks/geo-for-clinics/      301
+/playbook/    /playbooks/geo-for-clinics/      301

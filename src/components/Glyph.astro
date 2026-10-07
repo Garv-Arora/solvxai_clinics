@@ -1,0 +1,167 @@
+---
+// Animated line-art vectors: hairline strokes, one copper accent, always moving a little.
+// Decorative (aria-hidden). Motion is CSS only and stops for prefers-reduced-motion.
+export type GlyphName = 'orbit' | 'radar' | 'signal' | 'graph' | 'chat' | 'scan' | 'doc' | 'bars' | 'clock' | 'gauge' | 'target' | 'book' | 'plug' | 'cart' | 'access';
+interface Props { name: GlyphName; size?: number; class?: string }
+const { name, size = 96, class: cls = '' } = Astro.props;
+const ticks = Array.from({ length: 12 }, (_, i) => i * 30);
+---
+<svg class:list={['glyph', `glyph-${name}`, cls]} viewBox="0 0 120 120" width={size} height={size} fill="none" aria-hidden="true" focusable="false">
+  {name === 'orbit' && (
+    <>
+      <ellipse cx="60" cy="60" rx="48" ry="18" class="g-m" transform="rotate(38 60 60)" />
+      <ellipse cx="60" cy="60" rx="48" ry="18" class="g-l" transform="rotate(-24 60 60)" />
+      <rect x="46" y="46" width="28" height="28" class="g-a gl-spin" style="--d:14s" />
+      <rect x="55" y="55" width="10" height="10" class="g-f" />
+      <g transform="rotate(-24 60 60)"><rect x="-4" y="-4" width="8" height="8" class="g-f gl-path" style="offset-path:path('M108 60A48 18 0 1 1 12 60A48 18 0 1 1 108 60');--d:3.6s" /></g>
+      <g transform="rotate(38 60 60)"><rect x="-3" y="-3" width="6" height="6" class="g-dot gl-path" style="offset-path:path('M12 60A48 18 0 1 0 108 60A48 18 0 1 0 12 60');--d:5.4s" /></g>
+    </>
+  )}
+  {name === 'radar' && (
+    <>
+      <circle cx="60" cy="60" r="48" class="g-l" /><circle cx="60" cy="60" r="32" class="g-m" /><circle cx="60" cy="60" r="16" class="g-m" />
+      <path d="M60 8v104M8 60h104" class="g-m" />
+      <g class="gl-spin" style="--d:3.2s"><path d="M60 60V12A48 48 0 0 1 94 26Z" class="g-wash" /><path d="M60 60V12" class="g-a" /></g>
+      <rect x="80" y="36" width="7" height="7" class="g-f gl-blink" style="--dl:.4s" />
+      <rect x="34" y="72" width="7" height="7" class="g-f gl-blink" style="--dl:1.9s" />
+      <rect x="72" y="84" width="7" height="7" class="g-f gl-blink" style="--dl:1.2s" />
+    </>
+  )}
+  {name === 'signal' && (
+    <>
+      <path d="M10 100h100" class="g-l" />
+      {[34, 58, 44, 76, 52, 66, 38].map((h, i) => <rect x={16 + i * 13.5} y={100 - h} width="7" height={h} class:list={[i === 3 ? 'g-f' : 'g-l', 'gl-eq']} style={`--dl:${i * 0.13}s`} />)}
+      <path d="M12 22h30M52 22h10" class="g-m" /><rect x="70" y="18" width="8" height="8" class="g-f gl-blink" style="--dl:.2s" />
+    </>
+  )}
+  {name === 'graph' && (
+    <>
+      <path d="M60 60L24 28M60 60L98 26M60 60L102 84M60 60L56 106M60 60L18 82M24 28L98 26M102 84L56 106" class="g-m" />
+      {[[24, 28], [98, 26], [102, 84], [56, 106], [18, 82]].map(([x, y], i) => (<><rect x={x - 5} y={y - 5} width="10" height="10" class="g-node" /><rect x="-3" y="-3" width="6" height="6" class="g-f gl-path" style={`offset-path:path('M${x} ${y}L60 60');--d:2.4s;--dl:${i * 0.45}s`} /></>))}
+      <rect x="49" y="49" width="22" height="22" class="g-a" /><rect x="55" y="55" width="10" height="10" class="g-f gl-pulse" />
+    </>
+  )}
+  {name === 'chat' && (
+    <>
+      <path d="M12 18h64v40H38L24 72V58H12z" class="g-l" />
+      <path d="M24 32h40M24 44h26" class="g-m" />
+      <path d="M108 54H48v38h36l14 14V92h10z" class="g-a" />
+      {[0, 1, 2].map((i) => <rect x={62 + i * 13} y="69" width="7" height="7" class="g-f gl-bob" style={`--dl:${i * 0.16}s`} />)}
+    </>
+  )}
+  {name === 'scan' && (
+    <>
+      <path d="M12 30V12h18M90 12h18v18M108 90v18H90M30 108H12V90" class="g-l" />
+      {[30, 52, 40, 64].map((h, i) => <rect x={28 + i * 18} y={94 - h} width="10" height={h} class={i === 3 ? 'g-a' : 'g-m'} />)}
+      <g class="gl-scan"><path d="M16 60h88" class="g-a" /><path d="M16 60h88" class="g-glow" /></g>
+    </>
+  )}
+  {name === 'doc' && (
+    <>
+      <path d="M28 12h44l20 20v76H28z" class="g-l" /><path d="M72 12v20h20" class="g-l" />
+      <rect x="38" y="30" width="16" height="9" class="g-f" />
+      {[50, 62, 74, 86].map((y, i) => <path d={`M38 ${y}h${[44, 36, 44, 24][i]}`} pathLength="1" class:list={[i === 0 ? 'g-a' : 'g-m', 'gl-draw']} style={`--dl:${i * 0.25}s`} />)}
+    </>
+  )}
+  {name === 'bars' && (
+    <>
+      <path d="M12 102h96" class="g-l" />
+      {[30, 46, 38, 66].map((h, i) => <rect x={20 + i * 22} y={102 - h} width="12" height={h} class:list={[i === 3 ? 'g-f' : 'g-l', 'gl-grow']} style={`--dl:${i * 0.15}s`} />)}
+      <path d="M22 60L46 44L68 52L102 18" pathLength="1" class="g-a gl-draw" style="--dl:.5s" /><path d="M88 18h14v14" class="g-a" />
+    </>
+  )}
+  {name === 'clock' && (
+    <>
+      <circle cx="60" cy="60" r="48" class="g-l" />
+      {ticks.map((a) => <path d="M60 16v7" class="g-m" transform={`rotate(${a} 60 60)`} />)}
+      <path d="M60 60V26" class="g-a gl-spin" style="--d:6s" /><path d="M60 60h24" class="g-l gl-spin" style="--d:36s" />
+      <rect x="55" y="55" width="10" height="10" class="g-f" />
+    </>
+  )}
+  {name === 'gauge' && (
+    <>
+      <path d="M14 84A46 46 0 0 1 106 84" class="g-l" />
+      {[-60, -30, 0, 30, 60].map((a) => <path d="M60 30v8" class="g-m" transform={`rotate(${a} 60 84)`} />)}
+      <path d="M60 84V44" class="g-a gl-needle" /><rect x="54" y="78" width="12" height="12" class="g-f" />
+      <path d="M28 104h64" class="g-m" />
+    </>
+  )}
+  {name === 'target' && (
+    <>
+      <rect x="14" y="14" width="92" height="92" class="g-m" /><rect x="30" y="30" width="60" height="60" class="g-l" /><rect x="45" y="45" width="30" height="30" class="g-a" />
+      <path d="M60 4v20M60 96v20M4 60h20M96 60h20" class="g-l" />
+      <rect x="55" y="55" width="10" height="10" class="g-f gl-pulse" />
+      <rect x="-3" y="-3" width="6" height="6" class="g-f gl-path" style="offset-path:path('M104 16L60 60');--d:2.2s" /><rect x="-3" y="-3" width="6" height="6" class="g-f gl-path" style="offset-path:path('M18 98L60 60');--d:2.2s;--dl:1.1s" />
+    </>
+  )}
+  {name === 'book' && (
+    <>
+      <path d="M60 30C46 20 28 20 12 25v68c16-5 34-5 48 5 14-10 32-10 48-5V25c-16-5-34-5-48 5z" class="g-l" /><path d="M60 30v68" class="g-a" />
+      {[44, 56, 68].map((y, i) => <path d={`M22 ${y}c10-2 20-2 28 2`} pathLength="1" class="g-m gl-draw" style={`--dl:${i * 0.2}s`} />)}
+      {[44, 56, 68].map((y, i) => <path d={`M70 ${y + 2}c8-4 18-4 28-2`} pathLength="1" class:list={[i === 0 ? 'g-a' : 'g-m', 'gl-draw']} style={`--dl:${0.6 + i * 0.2}s`} />)}
+    </>
+  )}
+  {name === 'plug' && (
+    <>
+      <g class="gl-join-l"><path d="M6 60h24" class="g-l" /><rect x="30" y="42" width="24" height="36" class="g-l" /><path d="M54 52h12M54 68h12" class="g-a" /></g>
+      <g class="gl-join-r"><rect x="68" y="42" width="24" height="36" class="g-a" /><path d="M92 60h22" class="g-l" /><rect x="76" y="56" width="8" height="8" class="g-f gl-blink" style="--dl:.9s" /></g>
+    </>
+  )}
+  {name === 'cart' && (
+    <>
+      <path d="M10 24h16l10 50h56l8-36H32" class="g-l" /><rect x="40" y="86" width="10" height="10" class="g-a" /><rect x="78" y="86" width="10" height="10" class="g-a" />
+      <rect x="54" y="42" width="16" height="16" class="g-f gl-drop" />
+    </>
+  )}
+  {name === 'access' && (
+    <>
+      <path d="M48 14h58v92H48" class="g-l" /><path d="M48 14v20M48 86v20" class="g-l" />
+      <g class="gl-nudge"><path d="M8 60h62" class="g-a" /><path d="M56 46l14 14-14 14" class="g-a" /></g>
+      <rect x="84" y="56" width="8" height="8" class="g-f gl-blink" style="--dl:.6s" />
+    </>
+  )}
+</svg>
+
+<style>
+  .glyph { display: block; overflow: visible; flex: 0 0 auto; }
+  .glyph :global(*) { vector-effect: non-scaling-stroke; }
+  .glyph :global(.g-l) { stroke: var(--sx-text); stroke-width: 1.25; opacity: .85; }
+  .glyph :global(.g-m) { stroke: var(--sx-text-muted); stroke-width: 1; }
+  .glyph :global(.g-a) { stroke: var(--sx-accent); stroke-width: 1.5; }
+  .glyph :global(.g-f) { fill: var(--sx-accent); }
+  .glyph :global(.g-dot) { fill: var(--sx-text); }
+  .glyph :global(.g-node) { fill: var(--sx-bg); stroke: var(--sx-text); stroke-width: 1.25; }
+  .glyph :global(.g-wash) { fill: var(--sx-accent); opacity: .16; }
+  .glyph :global(.g-glow) { stroke: var(--sx-accent); stroke-width: 7; opacity: .14; }
+
+  .glyph :global(.gl-spin) { transform-box: view-box; transform-origin: 60px 60px; animation: gl-spin var(--d, 8s) linear infinite; }
+  .glyph :global(.gl-path) { offset-rotate: 0deg; animation: gl-path var(--d, 3s) linear var(--dl, 0s) infinite; }
+  .glyph :global(.gl-blink) { animation: gl-blink 2.4s steps(1) var(--dl, 0s) infinite; }
+  .glyph :global(.gl-pulse) { transform-box: fill-box; transform-origin: 50% 50%; animation: gl-pulse 1.6s ease-in-out infinite; }
+  .glyph :global(.gl-eq) { transform-box: fill-box; transform-origin: 50% 100%; animation: gl-eq 1.1s ease-in-out var(--dl, 0s) infinite alternate; }
+  .glyph :global(.gl-grow) { transform-box: fill-box; transform-origin: 50% 100%; animation: gl-grow 3.2s cubic-bezier(.16, 1, .3, 1) var(--dl, 0s) infinite; }
+  .glyph :global(.gl-bob) { animation: gl-bob 1s ease-in-out var(--dl, 0s) infinite; }
+  .glyph :global(.gl-scan) { animation: gl-scan 2.6s ease-in-out infinite alternate; }
+  .glyph :global(.gl-draw) { stroke-dasharray: 1; animation: gl-draw 3.4s cubic-bezier(.16, 1, .3, 1) var(--dl, 0s) infinite; }
+  .glyph :global(.gl-needle) { transform-box: view-box; transform-origin: 60px 84px; animation: gl-needle 2.8s cubic-bezier(.5, 0, .2, 1) infinite alternate; }
+  .glyph :global(.gl-join-l) { animation: gl-join-l 2.6s cubic-bezier(.7, 0, .2, 1) infinite alternate; }
+  .glyph :global(.gl-join-r) { animation: gl-join-r 2.6s cubic-bezier(.7, 0, .2, 1) infinite alternate; }
+  .glyph :global(.gl-drop) { animation: gl-drop 2.4s cubic-bezier(.5, 0, .2, 1) infinite; }
+  .glyph :global(.gl-nudge) { animation: gl-nudge 1.8s cubic-bezier(.5, 0, .2, 1) infinite; }
+
+  @keyframes gl-spin { to { transform: rotate(360deg); } }
+  @keyframes gl-path { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+  @keyframes gl-blink { 0%, 100% { opacity: 1; } 50% { opacity: .15; } }
+  @keyframes gl-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.7); } }
+  @keyframes gl-eq { from { transform: scaleY(.35); } to { transform: scaleY(1); } }
+  @keyframes gl-grow { 0% { transform: scaleY(0); } 30%, 85% { transform: scaleY(1); } 100% { transform: scaleY(0); } }
+  @keyframes gl-bob { 0%, 100% { transform: translateY(0); opacity: .4; } 50% { transform: translateY(-5px); opacity: 1; } }
+  @keyframes gl-scan { from { transform: translateY(-38px); } to { transform: translateY(38px); } }
+  @keyframes gl-draw { 0% { stroke-dashoffset: 1; } 35%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -1; } }
+  @keyframes gl-needle { from { transform: rotate(-58deg); } to { transform: rotate(52deg); } }
+  @keyframes gl-join-l { from { transform: translateX(-9px); } 55%, to { transform: translateX(0); } }
+  @keyframes gl-join-r { from { transform: translateX(9px); } 55%, to { transform: translateX(0); } }
+  @keyframes gl-drop { 0% { transform: translateY(-34px); opacity: 0; } 35%, 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(0); opacity: 0; } }
+  @keyframes gl-nudge { 0% { transform: translateX(-12px); opacity: 0; } 40%, 70% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(14px); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .glyph :global(*) { animation: none !important; } }
+</style>

@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+---
+<Base title="Not found" noindex>
+  <section class="section-dark grid-live nf" data-hero>
+    <div class="wrap">
+      <p class="eyebrow">404 · not found</p>
+      <h1 class="display nf-d">This page <span class="accent">leaked.</span></h1>
+      <p class="lead" style="margin-top:24px">We couldn’t find it. Everything else is still here.</p>
+      <div class="btn-row" style="margin-top:32px"><a href="/" class="btn">Home <Icon name="arrow-right" size={16} stroke={2} /></a><a href="/playbooks/" class="link-arrow">Playbooks <Icon name="arrow-right" size={16} /></a></div>
+    </div>
+  </section>
+</Base>
+<style>
+  .nf { min-height: 100svh; display: flex; align-items: center; padding: 140px 0 80px; }
+  .nf-d { margin-top: 22px; font-size: clamp(64px, 11vw, 180px); }
+</style>

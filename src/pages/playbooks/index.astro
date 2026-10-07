@@ -1,0 +1,70 @@
+---
+// Playbooks hub: five covers. Each opens a web edition and has a PDF.
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Glyph from '../../components/Glyph.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import RowList from '../../components/RowList.astro';
+import CTABand from '../../components/CTABand.astro';
+import { PLAYBOOKS, pdfPath } from '../../data/playbooks';
+import { getPosts } from '../../data/blog';
+import { SITE } from '../../data/site';
+
+const crumbs = [{ name: 'Home', url: '/' }, { name: 'Playbooks', url: '/playbooks/' }];
+const posts = await getPosts();
+---
+<Base title="Playbooks: GEO, AEO, SEO and AI Search Trends" description="Five free SolvX.AI playbooks: GEO for clinics, AEO, SEO for the AI era, AI search trends 2026, and listings and reviews. Every number sourced. Read online or download the PDF." crumbs={crumbs} pageType="CollectionPage" updated={SITE.updated}>
+  <PageHero size="compact" crumbs={crumbs} eyebrow="Playbooks · free, sourced, no form" h1="The playbooks" lead="GEO, AEO, SEO and the 2026 numbers. Short, sourced, and written to be used on Monday." marquee={['GEO', 'AEO', 'SEO', 'Trends', 'Listings', 'Reviews', 'GEO', 'AEO', 'SEO', 'Trends']} primary={false} />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="covers">
+        {PLAYBOOKS.map((p) => (
+          <article class="cover" data-tilt="3">
+            <a href={`/playbooks/${p.slug}/`} class="cover-link" aria-label={`Read ${p.title}`}></a>
+            <div class="cover-top"><span class="cover-k">{p.code} · {p.topic}</span><span class="cover-a"><Icon name="arrow-up-right" size={22} /></span></div>
+            <Glyph name={p.glyph} size={120} class="cover-g" />
+            <h2 class="cover-t">{p.title}</h2>
+            <p class="cover-d">{p.subtitle}</p>
+            <div class="cover-foot">
+              <span class="chip"><Icon name="book-open" size={14} /> Read online</span>
+              <a href={pdfPath(p.slug)} class="chip chip-accent pdf" download><Icon name="download" size={14} /> PDF</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark section-bordered" id="blog">
+    <div class="wrap">
+      <div class="head-row">
+        <SectionHead eyebrow="From the blog" title="Shorter reads" />
+        <a href="/blog/" class="link-arrow">All posts <Icon name="arrow-right" size={16} /></a>
+      </div>
+      <div style="margin-top:36px"><RowList rows={posts.slice(0, 4).map((n) => ({ href: n.url, title: n.title, meta: `${n.kicker} · ${n.minutes} min` }))} /></div>
+    </div>
+  </section>
+
+  <CTABand />
+</Base>
+
+<style>
+  .covers { display: grid; gap: 1px; background: var(--sx-border); border: 1px solid var(--sx-border); }
+  @media (min-width: 720px) { .covers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .covers { grid-template-columns: repeat(6, minmax(0, 1fr)); } .cover { grid-column: span 2; } .cover:nth-child(-n+2) { grid-column: span 3; } }
+  .cover { position: relative; background: var(--sx-bg); padding: 28px 26px 24px; min-height: 400px; display: flex; flex-direction: column; overflow: hidden; transition: background-color .3s; }
+  .cover:hover { background: var(--sx-surface-hover); }
+  .cover-link { position: absolute; inset: 0; z-index: 1; }
+  .cover-top { display: flex; justify-content: space-between; align-items: center; }
+  .cover-k { font-family: var(--sx-font-condensed); letter-spacing: .16em; text-transform: uppercase; font-size: 14px; color: var(--sx-accent); }
+  .cover-a { color: var(--sx-text-muted); transition: color .2s, transform .3s; }
+  .cover:hover .cover-a { color: var(--sx-accent); transform: translate(3px, -3px); }
+  .cover :global(.cover-g) { margin-top: 30px; }
+  .cover-t { font-family: var(--sx-font-condensed); font-size: clamp(32px, 3vw, 46px); line-height: .95; text-transform: uppercase; letter-spacing: .02em; margin-top: auto; padding-top: 30px; }
+  .cover-d { margin-top: 10px; font-size: 15px; color: var(--sx-text-secondary); }
+  .cover-foot { display: flex; gap: 8px; margin-top: 20px; position: relative; z-index: 2; pointer-events: none; }
+  .cover-foot .pdf { pointer-events: auto; }
+  .cover-foot .pdf:hover { background: var(--sx-accent); color: var(--sx-accent-ink, #141210); }
+</style>

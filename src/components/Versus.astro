@@ -1,0 +1,45 @@
+---
+// Typical GEO agency vs SolvX in a few words per row. As each row scrolls in, the typical
+// answer is struck through and ours slides in. A real table, so it stays extractable.
+import Icon from './Icon.astro';
+import { VERSUS } from '../data/geo';
+---
+<table class="vs">
+  <caption class="sr-only">Typical GEO agency compared with SolvX.AI</caption>
+  <thead><tr><th scope="col">Area</th><th scope="col">Typical GEO agency</th><th scope="col">SolvX.AI</th></tr></thead>
+  <tbody>
+    {VERSUS.map((v) => (
+      <tr data-activate>
+        <th scope="row"><Icon name={v.icon} size={18} class="icon-accent" />{v.area}</th>
+        <td class="vs-typ"><span>{v.typical}</span></td>
+        <td class="vs-ours"><Icon name="check" size={18} stroke={2} /><span>{v.ours}</span></td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+<style>
+  .vs { width: 100%; border-collapse: collapse; border-top: 1px solid var(--sx-border); }
+  .vs thead th { text-align: left; font-family: var(--sx-font-condensed); font-weight: 400; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--sx-text-muted); padding: 14px 0; border-bottom: 1px solid var(--sx-border); }
+  .vs thead th:last-child { color: var(--sx-accent); }
+  .vs tbody tr { border-bottom: 1px solid var(--sx-border); }
+  .vs tbody th { text-align: left; font-family: var(--sx-font-condensed); font-weight: 400; font-size: 16px; letter-spacing: .12em; text-transform: uppercase; color: var(--sx-text-secondary); padding: 22px 16px 22px 0; white-space: nowrap; width: 20%; }
+  .vs tbody th :global(svg) { vertical-align: -3px; margin-right: 10px; }
+  .vs td { padding: 22px 16px 22px 0; vertical-align: middle; }
+  .vs-typ { width: 30%; color: var(--sx-text-muted); font-size: 17px; }
+  .vs-typ span { position: relative; display: inline-block; }
+  .vs-typ span::after { content: ''; position: absolute; left: -4px; right: -4px; top: 52%; height: 1px; background: var(--sx-text-muted); transform-origin: 0 50%; transition: transform .6s cubic-bezier(.16, 1, .3, 1); }
+  .vs-ours { font-family: var(--sx-font-condensed); font-size: clamp(22px, 2.5vw, 34px); line-height: 1; text-transform: uppercase; color: var(--sx-text); }
+  .vs-ours :global(svg) { color: var(--sx-accent); vertical-align: -1px; margin-right: 12px; }
+  .vs-ours span { display: inline-block; transition: transform .7s cubic-bezier(.16, 1, .3, 1), opacity .5s, color .4s; }
+  .vs tbody tr:hover .vs-ours span { color: var(--sx-accent); }
+  :global(.motion) .vs tbody tr:not(.on) .vs-typ span::after { transform: scaleX(0); }
+  :global(.motion) .vs tbody tr:not(.on) .vs-ours span { transform: translateX(-18px); opacity: 0; }
+  :global(.motion) .vs tbody tr:not(.on) .vs-ours :global(svg) { opacity: 0; }
+  @media (max-width: 760px) {
+    .vs thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .vs tbody tr { display: grid; gap: 6px; padding: 20px 0; }
+    .vs tbody th, .vs td { padding: 0; width: auto; }
+    .vs-typ { font-size: 15px; }
+  }
+</style>

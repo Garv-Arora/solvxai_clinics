@@ -1,0 +1,79 @@
+---
+// Case studies hub. These are public case studies of other firms' work, shown as evidence
+// of what this kind of work produces for a clinic. The page says so before anything else.
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Glyph from '../../components/Glyph.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import Timeline from '../../components/Timeline.astro';
+import CTABand from '../../components/CTABand.astro';
+import { CASES } from '../../data/cases';
+import { STEPS, TERMS } from '../../data/clinics';
+import { SITE } from '../../data/site';
+
+const crumbs = [{ name: 'Home', url: '/' }, { name: 'Case studies', url: '/case-studies/' }];
+const regions = CASES.map((c) => c.region);
+---
+<Base title="Clinic Case Studies: AI Search Results Across America" description="Four published case studies of US clinics that grew through search and AI visibility: dermatology in New York, plastic surgery in Michigan and Virginia, cosmetic dentistry in Florida. Each one names who did the work." crumbs={crumbs} pageType="CollectionPage" updated={SITE.updated}>
+  <PageHero size="compact" crumbs={crumbs} eyebrow="Case studies · clinics across America" h1="What this work does for a clinic" lead="Four practices. Four parts of the country. Results published by the firms that did the work." marquee={regions.concat(regions)} />
+
+  <section class="section">
+    <div class="wrap">
+      <p class="honest" data-reveal><Icon name="badge-check" size={20} class="icon-accent" /> <span>These are public case studies. The work was done by the firm named on each one, not by SolvX.AI. We show them because they are the best published evidence of what this work produces for a clinic. Every figure links to where it was published.</span></p>
+      <div class="cases">
+        {CASES.map((c, i) => (
+          <a href={`/case-studies/${c.slug}/`} class="case" data-tilt="3">
+            <div class="case-top">
+              <span class="case-k">0{i + 1} · {c.region}</span>
+              <span class="case-r"><Glyph name={c.glyph} size={64} /><span class="case-a"><Icon name="arrow-up-right" size={22} /></span></span>
+            </div>
+            <p class="numeral case-v">{c.headline.value}</p>
+            <p class="case-l">{c.headline.label}</p>
+            <h2 class="case-t">{c.practice}</h2>
+            <p class="case-m"><Icon name="map-pin" size={14} /> {c.place} · {c.specialty}</p>
+            <ul class="case-x">
+              {c.metrics.slice(0, 2).map((m) => <li><b>{m.value}</b> {m.label}</li>)}
+            </ul>
+            <p class="case-by">Work by {c.by.name} · {c.period}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark section-bordered">
+    <div class="wrap two-col">
+      <SectionHead index="→" eyebrow="What they have in common" title="The same five steps" lead="Different firms, different cities, the same work: find out who the AI names, build the pages it can quote, get listed, get talked about, measure again.">
+        <p class="terms"><Icon name="shield-check" size={18} class="icon-accent" /> {TERMS}</p>
+        <div class="btn-row">
+          <a href="/playbooks/geo-for-clinics/" class="btn-ghost"><Icon name="book-open" size={16} /> Read the clinic playbook</a>
+        </div>
+      </SectionHead>
+      <Timeline steps={STEPS} compact />
+    </div>
+  </section>
+
+  <CTABand title="Where does your practice stand?" text="Fifteen minutes to agree the questions your patients ask. Then we show you who the AI names for them." />
+</Base>
+
+<style>
+  .honest { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; border: 1px solid var(--sx-border); border-left: 2px solid var(--sx-accent); padding: 18px 20px; font-size: 15px; line-height: 1.6; color: var(--sx-text-secondary); max-width: 900px; }
+  .cases { display: grid; gap: 1px; background: var(--sx-border); border: 1px solid var(--sx-border); margin-top: 40px; }
+  @media (min-width: 900px) { .cases { grid-template-columns: 1fr 1fr; } }
+  .case { position: relative; background: var(--sx-bg); padding: 30px 28px 26px; display: flex; flex-direction: column; min-height: 460px; overflow: hidden; transition: background-color .3s; }
+  .case:hover { background: var(--sx-surface-hover); }
+  .case-top { display: flex; justify-content: space-between; align-items: flex-start; min-height: 64px; }
+  .case-k { font-family: var(--sx-font-condensed); letter-spacing: .16em; text-transform: uppercase; font-size: 14px; color: var(--sx-accent); }
+  .case-a { color: var(--sx-text-muted); transition: color .2s, transform .3s; }
+  .case:hover .case-a { color: var(--sx-accent); transform: translate(3px, -3px); }
+  .case-r { display: flex; align-items: center; gap: 14px; }
+  .case-v { font-size: clamp(60px, 7vw, 116px); line-height: .85; margin-top: 30px; position: relative; }
+  .case-l { margin-top: 14px; font-size: 15px; color: var(--sx-text); max-width: 380px; position: relative; }
+  .case-t { font-family: var(--sx-font-condensed); font-size: clamp(30px, 3vw, 42px); line-height: 1; text-transform: uppercase; letter-spacing: .02em; margin-top: auto; padding-top: 36px; }
+  .case-m { display: flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--sx-text-muted); }
+  .case-x { list-style: none; display: grid; gap: 6px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--sx-border); font-size: 13px; color: var(--sx-text-secondary); }
+  .case-x b { font-family: var(--sx-font-condensed); font-weight: 400; font-size: 18px; letter-spacing: .04em; color: var(--sx-accent); margin-right: 4px; }
+  .case-by { margin-top: 14px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--sx-text-muted); }
+  .terms { display: flex; align-items: center; gap: 10px; margin-top: 22px; font-family: var(--sx-font-condensed); font-size: 24px; letter-spacing: .04em; text-transform: uppercase; }
+</style>

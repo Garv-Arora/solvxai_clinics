@@ -1,0 +1,16 @@
+---
+// Crisp section header: index · rule · eyebrow, then a big split-reveal title and a lead.
+interface Props { index?: string; eyebrow: string; title: string; lead?: string; as?: 'h2' | 'h1'; class?: string }
+const { index, eyebrow, title, lead, as = 'h2', class: cls = '' } = Astro.props;
+const H = as;
+---
+<header class:list={['shead', cls]}>
+  <div class="shead-top">
+    {index && <span class="shead-i">{index}</span>}
+    <span class="shead-rule" aria-hidden="true"></span>
+    <p class="eyebrow plain">{eyebrow}</p>
+  </div>
+  <H class="h2">{title}</H>
+  {lead && <p class="lead">{lead}</p>}
+  <slot />
+</header>

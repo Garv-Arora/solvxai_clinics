@@ -1,0 +1,172 @@
+---
+// Homepage: visual first. Every block leads with a graphic and carries a line or two of copy;
+// the depth lives one click away (case studies and playbooks).
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import CTABand from '../components/CTABand.astro';
+import Globe3D from '../components/Globe3D.astro';
+import Marquee from '../components/Marquee.astro';
+import SectionHead from '../components/SectionHead.astro';
+import StatBand from '../components/StatBand.astro';
+import Promises from '../components/Promises.astro';
+import Stack3D from '../components/Stack3D.astro';
+import AnswerShareSim from '../components/AnswerShareSim.astro';
+import Versus from '../components/Versus.astro';
+import Glyph from '../components/Glyph.astro';
+import { SITE } from '../data/site';
+import { ENGINES, LANDSCAPE, PILLARS } from '../data/geo';
+import { CLINIC_TYPES, CLINIC_STATS, TERMS } from '../data/clinics';
+import { CASES } from '../data/cases';
+import { PLAYBOOKS } from '../data/playbooks';
+
+const stats = PILLARS[0].evidence.map((e) => ({ value: e.value, label: e.label, source: e.src.label.split(':')[0], url: e.src.url }));
+const picks = ['geo-for-clinics', 'aeo-playbook', 'seo-playbook', 'ai-search-trends-2026'].map((s) => PLAYBOOKS.find((p) => p.slug === s)!);
+---
+<Base title="SolvX.AI: The Only GEO Agency You Need" description="SolvX.AI is the only GEO agency you need: named and cited in ChatGPT, Google AI Mode and Copilot, measured with Answer Share, shipped weekly, turned into pipeline." updated={SITE.updated}>
+  <!-- HERO: 3D answer space -->
+  <section class="hero section-dark grid-live" data-hero>
+    <div class="hero-globe"><Globe3D /></div>
+    <div class="wrap hero-in">
+      <p class="eyebrow">GEO agency · generative engine optimisation</p>
+      <p class="display hero-display" data-split aria-hidden="true"><span class="dl">The only </span><span class="dl accent">GEO agency </span><span class="dl">you need.</span></p>
+      <h1 class="hero-title" data-nosplit data-reveal>SolvX.AI is the GEO agency that gets brands named, cited and chosen in ChatGPT, Google AI Mode and Copilot, then turns that visibility into pipeline.</h1>
+      <div class="btn-row hero-cta">
+        <a href={SITE.meetUrl} target="_blank" rel="noopener" class="btn">Get your baseline <Icon name="arrow-right" size={18} stroke={2} /></a>
+        <a href="#stack" class="btn-ghost"><Icon name="layers" size={16} /> See the system</a>
+      </div>
+    </div>
+    <div class="hero-foot"><Marquee items={ENGINES} variant="small" speed={26} label="Engines we cover" /></div>
+  </section>
+
+  <StatBand stats={stats} />
+
+  <!-- 01 PROMISES -->
+  <Promises index="01" />
+
+  <!-- 02 STACK (3D) -->
+  <Stack3D index="02" />
+
+  <!-- 03 METHOD -->
+  <section class="section section-bordered" id="method">
+    <div class="wrap two-col method">
+      <SectionHead index="03" eyebrow="The method" title="Odds, not screenshots" lead="Ask an AI the same question twice and you get two different lists. So we ask again and again, and report your odds of being named.">
+        <div class="btn-row">
+          <a href="/playbooks/ai-search-trends-2026/" class="btn-ghost"><Icon name="gauge" size={16} /> See the numbers</a>
+        </div>
+      </SectionHead>
+      <div class="sim-3d" data-reveal><div class="sim-base"><div data-tilt="3"><AnswerShareSim /></div></div></div>
+    </div>
+  </section>
+
+  <Marquee items={['Be the answer', 'Every engine', 'Every time', 'Measured', 'Shipped weekly']} variant="outline" speed={44} label="Be the answer, every engine, every time" />
+
+  <!-- 04 VERSUS -->
+  <section class="section section-dark" id="compare">
+    <div class="wrap">
+      <div class="head-row">
+        <SectionHead index="04" eyebrow="How we are better" title="Not another GEO checklist" lead={`We read ${LANDSCAPE.total} GEO agencies’ pages. ${LANDSCAPE.repeatedRuns} measure with repeated runs.`} />
+        <a href="/case-studies/" class="link-arrow">See the case studies <Icon name="arrow-right" size={16} /></a>
+      </div>
+      <div style="margin-top:44px"><Versus /></div>
+    </div>
+  </section>
+
+  <!-- 05 CLINICS -->
+  <section class="section section-bordered" id="clinics">
+    <div class="wrap">
+      <div class="head-row">
+        <SectionHead index="05" eyebrow="Who we do it for" title="Built for clinics" lead="Patients now ask an AI who to see. It names three or four practices. We get yours into the answer." />
+        <a href="/playbooks/geo-for-clinics/" class="link-arrow">The clinic playbook <Icon name="arrow-right" size={16} /></a>
+      </div>
+      <div class="cl-stats">
+        {CLINIC_STATS.map((s) => (
+          <div class="cl-stat">
+            <p class="numeral cl-v">{s.value}</p>
+            <p class="cl-l">{s.label}</p>
+            {s.source && <p class="cl-s">Source: <a href={s.url} target="_blank" rel="noopener">{s.source}</a></p>}
+          </div>
+        ))}
+      </div>
+      <div class="bento clinics">
+        {CLINIC_TYPES.map((c, i) => (
+          <a href="/case-studies/" class="tile" data-tilt="5">
+            <div class="tile-top"><span class="tile-k">0{i + 1}</span><span class="tile-a"><Icon name="arrow-up-right" size={20} /></span></div>
+            <Glyph name={c.glyph} size={84} class="cl-g" />
+            <h3 class="tile-t">{c.name}</h3>
+            <p class="tile-d">{c.ask}</p>
+          </a>
+        ))}
+      </div>
+      <p class="cl-terms"><Icon name="shield-check" size={18} class="icon-accent" /> {TERMS}</p>
+    </div>
+  </section>
+
+  <!-- 06 EXPLORE -->
+  <section class="section section-dark section-bordered" id="proof">
+    <div class="wrap">
+      <div class="head-row">
+        <SectionHead index="06" eyebrow="Proof and playbooks" title="Check the work" />
+        <a href="/blog/" class="link-arrow">Read the blog <Icon name="arrow-right" size={16} /></a>
+      </div>
+      <div class="bento" style="margin-top:44px">
+        <a href="/case-studies/" class="tile wide flag" data-tilt="3">
+          <div class="tile-top"><span class="tile-k">Case studies</span><span class="tile-a"><Icon name="arrow-up-right" size={22} /></span></div>
+          <Glyph name="orbit" size={150} class="flag-g" />
+          <h3 class="tile-t">{CASES.length} clinics</h3>
+          <p class="tile-d">Published results from New York, Michigan, Virginia and Florida.</p>
+        </a>
+        {picks.map((p) => (
+          <a href={`/playbooks/${p.slug}/`} class="tile" data-tilt="5">
+            <div class="tile-top"><span class="tile-k">Playbook · {p.topic}</span><span class="tile-a"><Icon name="arrow-up-right" size={20} /></span></div>
+            <Glyph name={p.glyph} size={84} class="ex-g" />
+            <h3 class="tile-t">{p.title.replace(/^The /, '')}</h3>
+            <p class="tile-d">{p.subtitle}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTABand title="See where you stand in 72 hours" text="Fifteen minutes to scope it. Then your Answer Share across seven engines and the fixes worth doing first." />
+</Base>
+
+<style>
+  .hero { min-height: 100svh; display: flex; flex-direction: column; padding: 108px 0 0; }
+  .hero-in { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; }
+  .hero-display { margin-top: 22px; font-size: clamp(64px, 9.4vw, 168px); }
+  .hero-display .dl { display: block; }
+  .hero-title { margin-top: 24px; font-family: var(--sx-font-body); font-weight: 500; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.55; letter-spacing: 0; text-transform: none; color: var(--sx-text-secondary); max-width: 520px; }
+  .hero-cta { margin-top: 32px; }
+  .hero-globe { position: relative; z-index: 1; width: min(92vw, 520px); margin: -8px auto -40px; order: 2; pointer-events: none; }
+  .hero-foot { margin-top: 40px; position: relative; z-index: 2; order: 3; }
+  .hero-foot :global(.marquee) { border-bottom: 0; }
+  @media (min-width: 1024px) {
+    .hero-globe { position: absolute; right: max(-7vw, -110px); top: 50%; translate: 0 -53%; width: min(66vw, 100svh, 980px); margin: 0; }
+    .hero-globe :global(.g3d) { max-height: none; }
+  }
+  .method { align-items: center; }
+  .sim-3d { perspective: 1400px; }
+  .sim-base { transform-style: preserve-3d; }
+  @media (min-width: 1024px) { .sim-base { transform: rotateY(-9deg) rotateX(4deg); } }
+  .flag { min-height: 340px; }
+  .flag :global(.flag-g) { position: absolute; right: 28px; top: 50%; translate: 0 -50%; opacity: .95; }
+  .flag .tile-t { font-size: clamp(48px, 6vw, 96px); }
+  @media (max-width: 719px) { .flag :global(.flag-g) { position: static; translate: none; margin-top: 20px; width: 110px; height: 110px; } }
+  .bento :global(.ex-g) { margin-top: 24px; }
+  /* clinics */
+  .cl-stats { display: grid; margin-top: 44px; border-top: 1px solid var(--sx-border); border-bottom: 1px solid var(--sx-border); }
+  @media (min-width: 900px) { .cl-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .cl-stat { padding: 36px 0 30px; border-bottom: 1px solid var(--sx-border); }
+  .cl-stat:last-child { border-bottom: 0; }
+  @media (min-width: 900px) { .cl-stat { padding: 44px 32px 38px; border-bottom: 0; border-right: 1px solid var(--sx-border); } .cl-stat:first-child { padding-left: 0; } .cl-stat:last-child { border-right: 0; } }
+  .cl-v { font-size: clamp(64px, 7vw, 112px); line-height: .85; }
+  .cl-l { margin-top: 14px; font-size: 15px; color: var(--sx-text); max-width: 320px; }
+  .cl-s { margin-top: 10px; font-size: 11px; color: var(--sx-text-muted); }
+  .cl-s a { border-bottom: 1px solid var(--sx-border-hover); }
+  .cl-s a:hover { color: var(--sx-accent); border-color: var(--sx-accent); }
+  .clinics { margin-top: 44px; }
+  .clinics .tile { min-height: 290px; }
+  .clinics :global(.cl-g) { margin-top: 22px; }
+  .clinics .tile-t { font-size: clamp(26px, 2.2vw, 34px); padding-top: 22px; }
+  .cl-terms { display: flex; align-items: center; gap: 12px; margin-top: 28px; font-family: var(--sx-font-condensed); font-size: clamp(22px, 2.4vw, 32px); letter-spacing: .04em; text-transform: uppercase; }
+</style>

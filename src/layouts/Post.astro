@@ -1,0 +1,62 @@
+---
+// Blog post layout. Frontmatter: title, description, date, kicker, (updated), (metaTitle).
+import Base from './Base.astro';
+import Icon from '../components/Icon.astro';
+import CTABand from '../components/CTABand.astro';
+import PageHero from '../components/PageHero.astro';
+import RowList from '../components/RowList.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { getPosts } from '../data/blog';
+import { article } from '../data/schema';
+import { SITE, fmtDate } from '../data/site';
+
+const { frontmatter } = Astro.props;
+const posts = await getPosts();
+const self = posts.find((n) => Astro.url.pathname.includes(n.slug));
+const more = posts.filter((n) => n.slug !== self?.slug).slice(0, 3);
+const published = frontmatter.date;
+const updated = frontmatter.updated ?? frontmatter.date;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const crumbs = [{ name: 'Home', url: '/' }, { name: 'Blog', url: '/blog/' }, { name: frontmatter.title, url: Astro.url.pathname }];
+const jsonld = article(Astro.site!, { url: canonical, headline: frontmatter.title, description: frontmatter.description, published, updated, section: 'Blog' });
+---
+<Base title={frontmatter.metaTitle ?? frontmatter.title} description={frontmatter.description} jsonld={jsonld} crumbs={crumbs} published={published} updated={updated} ogType="article">
+  <PageHero size="compact" crumbs={crumbs} eyebrow={frontmatter.kicker} h1={frontmatter.title} lead={frontmatter.description} primary={false}>
+    <p class="small meta">
+      {updated !== published ? <>Updated <time datetime={updated}>{fmtDate(updated)}</time> · First published <time datetime={published}>{fmtDate(published)}</time></> : <time datetime={published}>{fmtDate(published)}</time>}
+      · {self?.minutes ?? 3} min read · By the {SITE.name} team
+    </p>
+  </PageHero>
+
+  <div class="wrap p-body">
+    <article class="prose"><slot /></article>
+    <aside class="p-side">
+      <div class="side-card">
+        <p class="tag">Go deeper</p>
+        <a href="/playbooks/geo-for-clinics/" class="link-arrow">The clinic playbook <Icon name="arrow-right" size={16} /></a>
+        <a href="/case-studies/" class="link-arrow">Case studies <Icon name="arrow-right" size={16} /></a>
+      </div>
+      <div class="side-card">
+        <p class="tag">Rule we write by</p>
+        <p class="quote" style="font-size:16px">Every number names its source. If we can’t source it, we don’t say it.</p>
+      </div>
+    </aside>
+  </div>
+
+  <section class="section section-dark section-bordered">
+    <div class="wrap">
+      <SectionHead eyebrow="Keep reading" title="More from the blog" />
+      <div style="margin-top:36px"><RowList rows={more.map((n) => ({ href: n.url, title: n.title, meta: `${n.kicker} · ${n.minutes} min` }))} /></div>
+    </div>
+  </section>
+  <CTABand />
+</Base>
+
+<style>
+  .meta { margin-top: 18px; }
+  .p-body { display: grid; gap: 48px; padding-top: 56px; padding-bottom: 80px; }
+  @media (min-width: 1024px) { .p-body { grid-template-columns: minmax(0, 720px) 300px; justify-content: space-between; } }
+  .p-side { display: grid; gap: 16px; align-content: start; }
+  @media (min-width: 1024px) { .p-side { position: sticky; top: 100px; } }
+  .side-card { border: 1px solid var(--sx-border); padding: 22px; display: grid; gap: 14px; }
+</style>

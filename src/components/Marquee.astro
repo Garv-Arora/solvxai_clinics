@@ -1,0 +1,11 @@
+---
+// Infinite marquee; speeds up with scroll velocity (motion.ts). Items are real text,
+// listed once in the HTML (the loop copy is added at runtime and hidden from assistive tech).
+interface Props { items: string[]; variant?: 'outline' | 'small' | 'solid'; reverse?: boolean; speed?: number; label?: string }
+const { items, variant = 'solid', reverse = false, speed = 40, label } = Astro.props;
+---
+<div class:list={['marquee', variant === 'outline' && 'outline', variant === 'small' && 'small']} data-marquee data-reverse={reverse ? '1' : undefined} data-speed={speed} role="group" aria-label={label ?? items.join(', ')}>
+  <div data-track>
+    {items.map((t) => <span class="mq-item">{t}</span>)}
+  </div>
+</div>

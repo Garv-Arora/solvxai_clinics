@@ -1,0 +1,21 @@
+---
+// Blog hub. Not in the main navigation; reached from the home page, the playbooks and the footer.
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import RowList from '../../components/RowList.astro';
+import CTABand from '../../components/CTABand.astro';
+import { getPosts } from '../../data/blog';
+import { SITE, fmtDate } from '../../data/site';
+
+const crumbs = [{ name: 'Home', url: '/' }, { name: 'Blog', url: '/blog/' }];
+const posts = await getPosts();
+---
+<Base title="Blog: AI Search for Clinics, in Plain Words" description="Short, sourced posts from SolvX.AI on how patients choose a clinic in 2026, how AI answers are built, and what GEO, AEO and SEO each do." crumbs={crumbs} pageType="CollectionPage" updated={SITE.updated}>
+  <PageHero size="compact" crumbs={crumbs} eyebrow="Blog · short and sourced" h1="The blog" lead="Three-minute reads on how AI picks who to name, and what a clinic can do about it." primary={false} secondary={{ href: '/playbooks/', label: 'The playbooks', icon: 'book-open' }} />
+  <section class="section">
+    <div class="wrap">
+      <RowList rows={posts.map((n) => ({ href: n.url, title: n.title, desc: n.description, meta: `${n.kicker} · ${fmtDate(n.date)} · ${n.minutes} min` }))} headingLevel="h2" />
+    </div>
+  </section>
+  <CTABand />
+</Base>

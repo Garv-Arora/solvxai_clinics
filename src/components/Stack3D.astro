@@ -1,0 +1,147 @@
+---
+// The seven GEO layers as a 3D isometric stack (CSS 3D transforms). On desktop the section
+// pins and each scroll step drops the next plate onto the stack; on phones the stack stays
+// in view while the list scrolls under it. Names and one-liners are a plain list in the HTML.
+import Icon from './Icon.astro';
+import { STACK } from '../data/geo';
+import { SITE } from '../data/site';
+interface Props { index?: string }
+const { index = '03' } = Astro.props;
+---
+<section class="s3d section-dark" data-s3d id="stack" style={`--n:${STACK.length}`}>
+  <div class="s3d-pin">
+    <div class="wrap s3d-grid">
+      <div class="s3d-copy">
+        <div class="shead">
+          <div class="shead-top"><span class="shead-i">{index}</span><span class="shead-rule" aria-hidden="true"></span><p class="eyebrow plain">The GEO stack</p></div>
+          <h2 class="h2">Seven layers. One team.</h2>
+        </div>
+        <ol class="s3d-list">
+          {STACK.map((s, i) => (
+            <li class:list={['s3d-item', { on: i === 0 }]} data-s3d-item={i}>
+              <span class="s3d-n">{s.n}</span>
+              <div>
+                <h3 class="s3d-t">{s.tag}</h3>
+                <p class="s3d-d">{s.short}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <a href={SITE.meetUrl} target="_blank" rel="noopener" class="link-arrow s3d-cta">Start with a 72-hour baseline <Icon name="arrow-right" size={16} /></a>
+      </div>
+
+      <div class="s3d-scene" aria-hidden="true">
+        <div class="s3d-stack" data-s3d-stack>
+          <span class="s3d-floor"></span>
+          <span class="s3d-edge" style="left:0;top:0"></span>
+          <span class="s3d-edge" style="left:100%;top:0"></span>
+          <span class="s3d-edge" style="left:0;top:100%"></span>
+          <span class="s3d-edge" style="left:100%;top:100%"></span>
+          {STACK.map((s, i) => (
+            <div class:list={['s3d-plate', { on: i === 0 }]} style={`--i:${i}`} data-s3d-plate={i}>
+              <svg viewBox="0 0 100 100" class="s3d-art" fill="none">
+                {i === 0 && Array.from({ length: 25 }).map((_, k) => <rect x={14 + (k % 5) * 15.5} y={14 + Math.floor(k / 5) * 15.5} width="10" height="10" class={[2, 6, 7, 11, 12, 13, 18, 21].includes(k) ? 'a-fill' : 'a-line'} />)}
+                {i === 1 && (<><rect x="14" y="14" width="72" height="72" class="a-line" /><rect x="27" y="27" width="46" height="46" class="a-line" /><rect x="39" y="39" width="22" height="22" class="a-acc" /><rect x="46" y="46" width="8" height="8" class="a-fill" /></>)}
+                {i === 2 && (<><path d="M14 30V14h16M70 14h16v16M86 70v16H70M30 86H14V70" class="a-acc" /><path d="M50 26v48M26 50h48" class="a-line" /><circle cx="50" cy="50" r="13" class="a-line" /><rect x="47" y="47" width="6" height="6" class="a-fill" /></>)}
+                {i === 3 && [0, 1, 2, 3, 4, 5].map((k) => <path d={`M22 ${22 + k * 11}h${[56, 44, 52, 30, 48, 38][k]}`} class={k === 0 ? 'a-acc thick' : 'a-line'} />)}
+                {i === 4 && (<>{[30, 52, 40, 66, 48, 74].map((h, k) => <rect x={17 + k * 11.5} y={86 - h} width="7" height={h} class={k === 5 ? 'a-fill' : 'a-line'} />)}<path d="M14 86h72" class="a-line" /></>)}
+                {i === 5 && (<><path d="M50 50L22 24M50 50L78 22M50 50L82 58M50 50L60 84M50 50L20 70M22 24L78 22M82 58L60 84" class="a-line" />{[[22, 24], [78, 22], [82, 58], [60, 84], [20, 70]].map(([x, y]) => <rect x={x - 4} y={y - 4} width="8" height="8" class="a-node" />)}<rect x="43" y="43" width="14" height="14" class="a-fill" /></>)}
+                {i === 6 && (<><path d="M18 26l22 24-22 24M40 26l22 24-22 24" class="a-line" /><path d="M62 26l22 24-22 24" class="a-acc thick" /></>)}
+              </svg>
+              <span class="s3d-num">{s.n}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .s3d { position: relative; border-top: 1px solid var(--sx-border-dark); overflow-x: clip; }
+  .s3d-pin { padding: 80px 0; }
+  .s3d-grid { display: grid; gap: 28px; }
+  .s3d-list { list-style: none; margin-top: 28px; border-top: 1px solid var(--sx-border-dark); }
+  .s3d-item { display: grid; grid-template-columns: 40px 1fr; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--sx-border-dark); align-items: baseline; }
+  .s3d-n { font-family: var(--sx-font-condensed); font-size: 14px; letter-spacing: .14em; color: var(--sx-text-muted); transition: color .3s; }
+  .s3d-t { font-family: var(--sx-font-condensed); font-size: clamp(26px, 3.4vh, 36px); line-height: 1; text-transform: uppercase; letter-spacing: .02em; color: var(--sx-text); transition: color .35s, transform .5s cubic-bezier(.16, 1, .3, 1); }
+  .s3d-d { color: var(--sx-text-secondary); font-size: 15px; margin-top: 6px; }
+  .s3d-cta { margin-top: 26px; }
+
+  /* the 3D scene */
+  .s3d-scene { perspective: 1800px; display: grid; place-items: center; height: 46svh; min-height: 320px; }
+  .s3d-stack { --gap: 22px; --rz: 0deg; position: relative; width: clamp(150px, 42vw, 210px); aspect-ratio: 1; transform-style: preserve-3d; transform: rotateX(58deg) rotateZ(calc(-45deg + var(--rz))); }
+  .s3d-floor { position: absolute; inset: -55%; transform: translateZ(calc(-3 * var(--gap) - 26px)); background-image: linear-gradient(var(--sx-border-dark) 1px, transparent 1px), linear-gradient(90deg, var(--sx-border-dark) 1px, transparent 1px); background-size: 28px 28px; mask-image: radial-gradient(circle, #000 20%, transparent 68%); -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 68%); }
+  .s3d-edge { position: absolute; height: 1px; width: calc((var(--n) - 1) * var(--gap)); background: var(--sx-border-hover); transform-origin: 0 0; transform: translateZ(calc(-3 * var(--gap))) rotateY(-90deg); }
+  .s3d-plate { --lift: 0px; position: absolute; inset: 0; transform-style: preserve-3d; transform: translateZ(calc((var(--i) - 3) * var(--gap) + var(--lift))); border: 1px solid var(--sx-text-muted); background: color-mix(in srgb, var(--sx-bg) 88%, transparent); transition: transform .7s cubic-bezier(.16, 1, .3, 1), opacity .45s, border-color .35s, background-color .35s; }
+  .s3d-plate::before { content: ''; position: absolute; inset: -1px; border: 1px solid var(--sx-border-hover); transform: translateZ(-7px); }
+  .s3d-art { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .5; transition: opacity .35s; }
+  .s3d-art :global(.a-line) { stroke: var(--sx-text-muted); stroke-width: 1; }
+  .s3d-art :global(.a-acc) { stroke: var(--sx-accent); stroke-width: 1.2; }
+  .s3d-art :global(.thick) { stroke-width: 2.4; }
+  .s3d-art :global(.a-fill) { fill: var(--sx-accent); }
+  .s3d-art :global(.a-node) { fill: var(--sx-dark); stroke: var(--sx-text-muted); stroke-width: 1; }
+  .s3d-num { position: absolute; left: 8px; bottom: 2px; font-family: var(--sx-font-condensed); font-size: 26px; line-height: 1; color: var(--sx-text-muted); transition: color .35s; }
+  /* highlighted plate: the current one while scrolling, the top one when the stack is static */
+  .s3d.live .s3d-plate.on, .s3d:not(.live) .s3d-plate:last-child { border-color: var(--sx-accent); background: color-mix(in srgb, var(--sx-accent) 20%, var(--sx-dark)); }
+  .s3d.live .s3d-plate.on .s3d-art, .s3d:not(.live) .s3d-plate:last-child .s3d-art { opacity: 1; }
+  .s3d.live .s3d-plate.on .s3d-num, .s3d:not(.live) .s3d-plate:last-child .s3d-num { color: var(--sx-accent); }
+
+  /* live (scroll-driven) states: plates above the current one wait, lifted and invisible */
+  .s3d.live .s3d-plate.up { opacity: 0; --lift: 150px; }
+  .s3d.live .s3d-item:not(.on):not(.done) .s3d-t { color: var(--sx-text-muted); }
+  .s3d.live .s3d-item.on .s3d-t { color: var(--sx-accent); transform: translateX(6px); }
+  .s3d.live .s3d-item.on .s3d-n, .s3d.live .s3d-item.done .s3d-n { color: var(--sx-accent); }
+
+  @media (max-width: 1023px) {
+    .s3d-scene { position: sticky; top: 56px; z-index: 2; background: var(--sx-dark); border-bottom: 1px solid var(--sx-border-dark); order: -1; margin: 0 -20px; }
+    .s3d-pin { padding-top: 0; }
+    .s3d-copy { padding-top: 36px; }
+  }
+  @media (min-width: 1024px) {
+    .s3d.live { height: calc(100svh + var(--n) * 38svh); }
+    .s3d.live .s3d-pin { position: sticky; top: 0; height: 100svh; display: flex; align-items: center; padding: 84px 0 28px; }
+    .s3d-pin { padding: 128px 0; }
+    .s3d-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: center; width: 100%; }
+    .s3d-scene { height: min(72svh, 640px); }
+    .s3d-stack { --gap: 40px; width: clamp(260px, 26vw, 400px); }
+    .s3d-item { padding: 1.3vh 0; }
+    /* pinned view: only the current layer shows its line, so the list reads as seven words */
+    .s3d.live .s3d-d { max-height: 0; opacity: 0; margin-top: 0; overflow: hidden; transition: max-height .5s cubic-bezier(.16, 1, .3, 1), opacity .35s, margin-top .5s; }
+    .s3d.live .s3d-item.on .s3d-d { max-height: 60px; opacity: 1; margin-top: 6px; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+  const BOT = /bot|crawl|spider|slurp|chatgpt|perplexity|claude|gptbot/i.test(navigator.userAgent);
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches || BOT;
+  document.querySelectorAll<HTMLElement>('[data-s3d]').forEach((root) => {
+    if (reduced) return; // static: the whole stack is shown, every line is visible
+    const plates = Array.from(root.querySelectorAll<HTMLElement>('[data-s3d-plate]'));
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-s3d-item]'));
+    const stack = root.querySelector<HTMLElement>('[data-s3d-stack]')!;
+    const n = plates.length;
+    let cur = -1;
+    const set = (k: number) => {
+      if (k === cur) return; cur = k;
+      plates.forEach((p, i) => { p.classList.toggle('on', i === k); p.classList.toggle('up', i > k); });
+      items.forEach((it, i) => { it.classList.toggle('on', i === k); it.classList.toggle('done', i < k); });
+    };
+    root.classList.add('live'); set(0);
+    ScrollTrigger.matchMedia({
+      '(min-width: 1024px)': () => {
+        ScrollTrigger.create({
+          trigger: root, start: 'top top', end: 'bottom bottom', scrub: true,
+          onUpdate: (self) => { set(Math.min(n - 1, Math.floor(self.progress * n))); stack.style.setProperty('--rz', `${-9 + self.progress * 18}deg`); },
+        });
+      },
+      '(max-width: 1023px)': () => {
+        items.forEach((it, i) => ScrollTrigger.create({ trigger: it, start: 'top 78%', end: 'bottom 78%', onToggle: (self) => self.isActive && set(i) }));
+      },
+    });
+    ScrollTrigger.refresh();
+  });
+</script>

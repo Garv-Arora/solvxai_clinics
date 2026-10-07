@@ -1,0 +1,69 @@
+---
+// Shared animated hero. The descriptive H1 (the entity/answer sentence engines quote)
+// stays first and small when a display line is given; otherwise the H1 itself is the
+// big split-reveal title. Optional motion graphic in the `viz` slot, marquee underneath.
+import Breadcrumbs from './Breadcrumbs.astro';
+import Marquee from './Marquee.astro';
+import Icon from './Icon.astro';
+import { SITE } from '../data/site';
+import type { Crumb } from '../data/schema';
+interface Link { href: string; label: string; icon?: string; external?: boolean }
+interface Props {
+  crumbs?: Crumb[]; eyebrow?: string; h1: string; display?: string[]; accent?: number; lead?: string;
+  primary?: Link | false; secondary?: Link; marquee?: string[]; size?: 'full' | 'page' | 'compact';
+}
+const { crumbs, eyebrow, h1, display, accent = -1, lead, primary, secondary, marquee, size = 'page' } = Astro.props;
+const main = primary === false ? null : (primary ?? { href: SITE.meetUrl, label: 'Book a 15-minute call', external: true });
+const hasViz = Astro.slots.has('viz');
+const long = h1.length > 48;
+---
+<section class:list={['phero', 'section-dark', 'grid-live', `phero-${size}`, { 'has-viz': hasViz }]} data-hero>
+  <div class="wrap phero-grid">
+    <div class="phero-copy">
+      {crumbs && <Breadcrumbs crumbs={crumbs} />}
+      {eyebrow && <p class="eyebrow phero-eb">{eyebrow}</p>}
+      {display ? (
+        <>
+          <h1 class="phero-h1 lede" data-nosplit data-reveal>{h1}</h1>
+          <p class="display phero-display" data-split aria-hidden="true">{display.map((l, i) => <span class:list={['dl', { accent: i === accent }]}>{l} </span>)}</p>
+        </>
+      ) : (
+        <h1 class:list={['h1', 'phero-h1', 'big', { long }]}>{h1}</h1>
+      )}
+      {lead && <p class="lead phero-lead">{lead}</p>}
+      <slot />
+      {(main || secondary) && (
+        <div class="btn-row phero-ctas">
+          {main && <a href={main.href} class="btn" target={main.external ? '_blank' : undefined} rel={main.external ? 'noopener' : undefined}>{main.label} <Icon name="arrow-right" size={18} stroke={2} /></a>}
+          {secondary && <a href={secondary.href} class="btn-ghost">{secondary.icon && <Icon name={secondary.icon} size={16} />} {secondary.label}</a>}
+        </div>
+      )}
+    </div>
+    {hasViz && <div class="phero-viz" data-parallax="0.06"><slot name="viz" /></div>}
+  </div>
+  {marquee && <div class="phero-foot"><Marquee items={marquee} variant="small" speed={32} /></div>}
+</section>
+
+<style>
+  .phero { padding: 118px 0 64px; display: flex; flex-direction: column; justify-content: center; }
+  .phero-full { min-height: 100svh; padding-bottom: 0; }
+  .phero-page { min-height: min(86svh, 860px); }
+  .phero-compact { padding: 112px 0 56px; }
+  @media (min-width: 1024px) { .phero-compact { padding: 140px 0 72px; } }
+  .phero:has(.phero-foot) { padding-bottom: 0; }
+  .phero-grid { display: grid; gap: 44px; align-items: center; flex: 1; width: 100%; }
+  @media (min-width: 1100px) { .has-viz .phero-grid { grid-template-columns: 1.08fr .92fr; gap: 52px; } }
+  .phero-eb { margin-top: 22px; }
+  .phero-copy > .phero-eb:first-child { margin-top: 0; }
+  .lede { margin-top: 20px; font-family: var(--sx-font-body); font-weight: 600; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.5; letter-spacing: 0; text-transform: none; color: var(--sx-text-secondary); max-width: 600px; }
+  .phero-display { margin-top: 20px; font-size: clamp(60px, 9vw, 150px); }
+  .phero-display .dl { display: block; }
+  .big { margin-top: 20px; font-size: clamp(48px, 7.4vw, 118px); line-height: .9; max-width: 15ch; }
+  .phero-compact .big { font-size: clamp(42px, 6vw, 92px); max-width: 18ch; }
+  .big.long { font-size: clamp(38px, 4.8vw, 72px); max-width: 24ch; }
+  .has-viz .phero-display { font-size: clamp(54px, 6.8vw, 112px); }
+  .phero-lead { margin-top: 22px; max-width: 640px; }
+  .phero-ctas { margin-top: 32px; }
+  .phero-foot { margin-top: 56px; }
+  .phero-foot :global(.marquee) { border-bottom: 0; }
+</style>

@@ -1,0 +1,18 @@
+---
+// Lucide icons (stroke 1.5, currentColor) inlined at build time.
+interface Props { name: string; size?: number; class?: string; stroke?: number }
+const { name, size = 18, class: cls = '', stroke = 1.5 } = Astro.props;
+const icons = import.meta.glob(
+  '/node_modules/lucide-static/icons/{arrow-right,arrow-up-right,target,cpu,bot,workflow,zap,chart-column,clock,unplug,banknote,flame,wrench,refresh-cw,clipboard-list,check,menu,x,sun,moon,radar,network,search,message-circle,file-text,download,calendar,phone,mail,shield-check,gauge,layers,database,briefcase,building-2,handshake,compass,scan-search,activity,waypoints,git-branch,book-open,languages,timer,quote,circle-help,circle-check-big,list-checks,route,filter,send,inbox,trending-up,eye,lock,key-round,plug,microscope,map,signal,radio-tower,messages-square,user-round-check,terminal,chevron-right,star,newspaper,map-pin,stethoscope,external-link,square-check,badge-check}.svg',
+  { query: '?raw', import: 'default', eager: true }
+) as Record<string, string>;
+const raw = icons[`/node_modules/lucide-static/icons/${name}.svg`];
+if (!raw) throw new Error(`Icon not found: ${name}`);
+const svg = raw
+  .replace(/<!--[\s\S]*?-->/, '')
+  .replace(/width="24"/, `width="${size}"`)
+  .replace(/height="24"/, `height="${size}"`)
+  .replace(/stroke-width="2"/, `stroke-width="${stroke}"`)
+  .replace(/class="([^"]*)"/, `class="$1 ${cls}" aria-hidden="true" focusable="false"`);
+---
+<Fragment set:html={svg} />

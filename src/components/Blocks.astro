@@ -1,0 +1,66 @@
+---
+// Renders a playbook section's blocks. Used by the web edition and the print pages,
+// so sizes are in em and colours come from the theme tokens.
+import type { Block } from '../data/playbooks';
+interface Props { blocks: Block[] }
+const { blocks } = Astro.props;
+const host = (u: string) => u.startsWith('/') ? '' : new URL(u).hostname.replace(/^www\./, '');
+---
+{blocks.map((b) => (
+  <>
+    {b.type === 'stats' && (
+      <div class="pb-stats" style={`--n:${Math.min(b.items.length, 3)}`}>
+        {b.items.map((s) => (
+          <div class="pb-stat">
+            <p class="pb-v">{s.value}</p>
+            <p class="pb-l">{s.label}</p>
+            {s.src && <p class="pb-s">Source: {s.src.url ? <a href={s.src.url} target={s.src.url.startsWith('/') ? undefined : '_blank'} rel="noopener">{s.src.label.split(':')[0]}</a> : s.src.label.split(':')[0]}</p>}
+          </div>
+        ))}
+      </div>
+    )}
+    {b.type === 'points' && <ul class="pb-points">{b.items.map((p) => <li>{p}</li>)}</ul>}
+    {b.type === 'steps' && (
+      <ol class="pb-steps">
+        {b.items.map((s) => (<li><span class="pb-n">{s.n}</span><div><h3 class="pb-h">{s.name}</h3><p>{s.what}</p></div></li>))}
+      </ol>
+    )}
+    {b.type === 'table' && (
+      <div class="pb-tablewrap"><table class="pb-table">
+        <thead><tr>{b.head.map((h) => <th>{h}</th>)}</tr></thead>
+        <tbody>{b.rows.map((r) => <tr>{r.map((c, i) => i === 0 ? <th scope="row">{c}</th> : <td>{c}</td>)}</tr>)}</tbody>
+      </table></div>
+    )}
+    {b.type === 'checklist' && <ul class="pb-check">{b.items.map((p) => <li><span class="pb-box" aria-hidden="true"></span><span>{p}</span></li>)}</ul>}
+    {b.type === 'note' && <p class="pb-note">{b.text}</p>}
+  </>
+))}
+
+<style is:global>
+  .pb-stats { display: grid; gap: 1px; background: var(--sx-border); border: 1px solid var(--sx-border); margin-top: 1.6em; }
+  @media (min-width: 760px) { .pb-stats { grid-template-columns: repeat(var(--n), minmax(0, 1fr)); } }
+  .pb-stat { background: var(--sx-bg); padding: 1.5em 1.4em 1.3em; break-inside: avoid; }
+  .pb-v { font-family: var(--sx-font-condensed); color: var(--sx-accent); font-size: 3.6em; line-height: .9; letter-spacing: .01em; }
+  .pb-l { margin-top: .7em; color: var(--sx-text); font-size: .95em; line-height: 1.5; }
+  .pb-s { margin-top: .6em; font-size: .72em; color: var(--sx-text-muted); }
+  .pb-s a { border-bottom: 1px solid var(--sx-border-hover); }
+  .pb-points { list-style: none; display: grid; margin-top: 1.4em; border-top: 1px solid var(--sx-border); }
+  .pb-points li { position: relative; padding: .85em 0 .85em 1.6em; border-bottom: 1px solid var(--sx-border); color: var(--sx-text); line-height: 1.55; break-inside: avoid; }
+  .pb-points li::before { content: ''; position: absolute; left: .1em; top: 1.4em; width: .5em; height: .5em; background: var(--sx-accent); }
+  .pb-steps { list-style: none; display: grid; margin-top: 1.4em; border-top: 1px solid var(--sx-border); }
+  .pb-steps li { display: grid; grid-template-columns: 3.4em 1fr; gap: 1em; padding: 1.1em 0; border-bottom: 1px solid var(--sx-border); break-inside: avoid; }
+  .pb-n { font-family: var(--sx-font-condensed); font-size: 2.6em; line-height: .9; color: var(--sx-accent); }
+  .pb-h { font-family: var(--sx-font-condensed); font-size: 1.5em; line-height: 1.05; letter-spacing: .03em; text-transform: uppercase; color: var(--sx-text); }
+  .pb-steps p { margin-top: .35em; color: var(--sx-text-secondary); line-height: 1.55; }
+  .pb-tablewrap { overflow-x: auto; margin-top: 1.4em; }
+  .pb-table { width: 100%; border-collapse: collapse; font-size: .92em; }
+  .pb-table th, .pb-table td { border: 1px solid var(--sx-border); padding: .7em .8em; text-align: left; vertical-align: top; line-height: 1.45; }
+  .pb-table thead th { font-family: var(--sx-font-condensed); font-weight: 400; letter-spacing: .12em; text-transform: uppercase; color: var(--sx-accent); font-size: .95em; }
+  .pb-table tbody th { font-weight: 600; color: var(--sx-text); white-space: nowrap; }
+  .pb-table td { color: var(--sx-text-secondary); }
+  .pb-table tr { break-inside: avoid; }
+  .pb-check { list-style: none; display: grid; gap: .1em; margin-top: 1.4em; border-top: 1px solid var(--sx-border); }
+  .pb-check li { display: grid; grid-template-columns: auto 1fr; gap: .9em; align-items: start; padding: .8em 0; border-bottom: 1px solid var(--sx-border); color: var(--sx-text); line-height: 1.5; break-inside: avoid; }
+  .pb-box { width: 1.05em; height: 1.05em; border: 1px solid var(--sx-accent); margin-top: .2em; }
+  .pb-note { margin-top: 1.4em; padding: 1em 1.2em; border-left: 2px solid var(--sx-accent); background: var(--sx-accent-soft); color: var(--sx-text); font-family: var(--sx-font-heading); font-style: italic; font-size: 1.1em; line-height: 1.45; break-inside: avoid; }
+</style>

@@ -1,0 +1,38 @@
+---
+// PDF cover: one dark A4 page. Merged with the interior by scripts/make_pdfs.py.
+import Base from '../../../../layouts/Base.astro';
+import { PLAYBOOKS, type Playbook } from '../../../../data/playbooks';
+import { SITE } from '../../../../data/site';
+export function getStaticPaths() { return PLAYBOOKS.map((p) => ({ params: { slug: p.slug }, props: { p } })); }
+const { p } = Astro.props as { p: Playbook };
+const words = p.title.split(' ');
+---
+<Base title={`${p.title} — cover`} noindex bare forceTheme="dark">
+  <div class="cv grid-pattern">
+    <div class="cv-top"><span class="cv-mark">SOLVX<span class="accent">.AI</span></span><span class="cv-code">Playbook · {p.code} / 0{PLAYBOOKS.length} · {p.topic}</span></div>
+    <div class="cv-mid">
+      <h1 class="cv-title">{words.map((w, i) => <span class:list={[{ accent: i === words.length - 1 }]}>{w} </span>)}</h1>
+      <span class="cv-rule"></span>
+      <p class="cv-sub">{p.subtitle}</p>
+    </div>
+    <div class="cv-bot">
+      <p class="cv-intro">{p.intro}</p>
+      <div class="cv-meta"><span>Edition 2026</span><span>Every number sourced</span><span>{SITE.meetUrl.replace('https://', '')}</span></div>
+    </div>
+  </div>
+</Base>
+<style is:global>
+  @page { size: A4; margin: 0; }
+  html, body { background: var(--sx-dark) !important; }
+</style>
+<style>
+  .cv { width: 210mm; height: 297mm; background-color: var(--sx-dark); padding: 22mm 20mm; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+  .cv-top { display: flex; justify-content: space-between; align-items: center; }
+  .cv-mark { font-family: var(--sx-font-condensed); font-size: 30px; letter-spacing: .08em; }
+  .cv-code { font-family: var(--sx-font-condensed); letter-spacing: .16em; color: var(--sx-text-muted); font-size: 15px; text-transform: uppercase; }
+  .cv-title { font-family: var(--sx-font-condensed); font-size: 96px; line-height: .9; text-transform: uppercase; }
+  .cv-rule { display: block; width: 90px; height: 5px; background: var(--sx-accent); margin-top: 28px; }
+  .cv-sub { font-family: var(--sx-font-heading); font-style: italic; font-size: 24px; color: var(--sx-text-secondary); margin-top: 22px; max-width: 150mm; }
+  .cv-intro { font-size: 14px; line-height: 1.6; color: var(--sx-text-secondary); max-width: 150mm; }
+  .cv-meta { display: flex; gap: 24px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--sx-border-dark-hover); font-family: var(--sx-font-condensed); letter-spacing: .14em; font-size: 13px; color: var(--sx-text-muted); text-transform: uppercase; }
+</style>
